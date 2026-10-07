@@ -20,12 +20,12 @@ const menuOverlay = {
   show: {
     clipPath: "inset(0 0 0% 0)",
     opacity: 1,
-    transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
+    transition: { duration: 0.7, ease: "easeInOut" },
   },
   exit: {
     clipPath: "inset(0 0 100% 0)",
     opacity: 0,
-    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1], delay: 0.2 },
+    transition: { duration: 0.5, ease: "easeInOut", delay: 0.2 },
   },
 };
 
@@ -37,7 +37,7 @@ const staggerLinks = {
 
 const linkItem = {
   hidden: { y: 80, opacity: 0 },
-  show: { y: 0, opacity: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  show: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
   exit: { y: -40, opacity: 0, transition: { duration: 0.3 } },
 };
 

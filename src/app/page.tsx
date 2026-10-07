@@ -13,7 +13,7 @@ function Reveal({ children, delay = 0, direction = "up" }: { children: React.Rea
       initial={{ opacity: 0, ...from }}
       whileInView={{ opacity: 1, y: 0, x: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.9, delay, ease: "easeOut" }}
     >
       {children}
     </motion.div>
@@ -89,7 +89,7 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const stagger = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.15 } } };
-  const fadeUp = { hidden: { opacity: 0, y: 40 }, show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] } } };
+  const fadeUp = { hidden: { opacity: 0, y: 40 }, show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: "easeOut" } } };
 
   return (
     <main style={{ overflowX: "hidden" }}>
@@ -192,7 +192,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.7, delay: i * 0.1, ease: "easeOut" }}
               whileHover={{ background: "#1a1a1a" }}
               style={{ padding: "3rem 2.5rem", background: "#111", cursor: "default", transition: "background 0.3s" }}
             >
@@ -223,7 +223,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.8, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.8, delay: i * 0.12, ease: "easeOut" }}
               style={{ cursor: "pointer" }}
             >
               <div style={{ position: "relative", height: i === 1 ? "500px" : "400px", overflow: "hidden", marginBottom: "1.5rem" }}>
@@ -367,7 +367,7 @@ export default function Home() {
             initial={{ y: 80, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: "easeOut" }}
             style={{ fontSize: "clamp(3rem, 7vw, 7rem)", color: "#fff", fontStyle: "italic", fontWeight: 400, lineHeight: 1, marginBottom: "3rem" }}
           >
             Ready to Transform<br />Your Space?
