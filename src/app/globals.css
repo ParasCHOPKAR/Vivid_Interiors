@@ -619,47 +619,227 @@ section {
   margin: 0;
 }
 
-/* Footer */
-.footer {
-  background-color: var(--bg-light);
-  padding: 4rem 2rem 2rem;
-  border-top: 1px solid var(--border-color);
+/* Footer link animations */
+.footer-nav-link {
+  transition: all 0.25s ease;
+}
+.footer-nav-link:hover {
+  color: #e8651c !important;
+  padding-left: 6px;
+}
+
+/* Custom form elements */
+.luxury-input, .luxury-select, .luxury-textarea {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.95rem;
+  border-radius: 2px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.luxury-input:focus, .luxury-select:focus, .luxury-textarea:focus {
+  border-color: #e8651c;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 1px #e8651c;
+}
+
+.luxury-input::placeholder, .luxury-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.luxury-select option {
+  background: #181818;
+  color: #fff;
+}
+
+/* Filter buttons */
+.filter-pill {
+  padding: 0.6rem 1.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 1px;
+  background: transparent;
+  color: #777;
+  border: 1px solid rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.footer-top {
-  align-items: flex-start;
-  margin-bottom: 4rem;
+.filter-pill:hover, .filter-pill.active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
 }
 
-.footer-col {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.filter-pill-dark {
+  padding: 0.6rem 1.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.05);
+  color: #aaa;
+  border: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.center-col {
+.filter-pill-dark:hover, .filter-pill-dark.active {
+  background: #e8651c;
+  color: #fff;
+  border-color: #e8651c;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FORGE AUTOMOTIVE SIGNATURE ANIMATIONS & ATELIER STYLING
+   ═══════════════════════════════════════════════════════════ */
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes gradient-angle {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+/* Forge Shimmer Button with Rotating Conic Border Glow */
+.forge-shimmer-btn {
+  --dur: 4.5s;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.95rem 2.2rem;
+  background: rgba(12, 12, 12, 0.9);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.4s ease, transform 0.3s cubic-bezier(0.43, 0.195, 0.02, 1), box-shadow 0.4s ease;
 }
 
-.center-col .logo {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+.forge-shimmer-btn:hover {
+  border-color: rgba(232, 101, 28, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(232, 101, 28, 0.25);
 }
 
-.right-col {
-  align-items: flex-end;
+.forge-shimmer-btn::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--gradient-angle) at center,
+    transparent 0%,
+    rgba(232, 101, 28, 0) 15%,
+    rgba(232, 101, 28, 0.8) 25%,
+    #ffffff 28%,
+    rgba(232, 101, 28, 0.8) 31%,
+    transparent 45%,
+    transparent 65%,
+    rgba(232, 101, 28, 0.7) 75%,
+    #ffffff 78%,
+    rgba(232, 101, 28, 0.7) 81%,
+    transparent 95%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-angle var(--dur) linear infinite;
+  pointer-events: none;
 }
 
-.footer-bottom {
-  border-top: 1px solid var(--border-color);
-  padding-top: 2rem;
+/* Forge Letter Roll Effect on Hover */
+.letter-roll-wrapper {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1.4;
+  vertical-align: middle;
 }
 
-.footer-links {
-  display: flex;
-  gap: 2rem;
+.letter-roll-char {
+  display: inline-block;
+  position: relative;
+  transition: transform 0.45s cubic-bezier(0.43, 0.195, 0.02, 1);
+  text-shadow: 0 -2.6em 0 currentColor;
 }
+
+.forge-shimmer-btn:hover .letter-roll-char,
+.btn-dark:hover .letter-roll-char,
+.btn-orange:hover .letter-roll-char,
+.btn-ghost:hover .letter-roll-char,
+.menu-link:hover .letter-roll-char {
+  transform: translateY(2.6em);
+}
+
+/* Forge Edge-Faded Marquee Mask */
+.forge-marquee-mask {
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+}
+
+/* Forge Subtle Carbon Card Border & Hover Glow */
+.forge-card {
+  position: relative;
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.43, 0.195, 0.02, 1), box-shadow 0.4s ease;
+}
+
+.forge-card:hover {
+  border-color: rgba(232, 101, 28, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5), 0 0 25px rgba(232, 101, 28, 0.1);
+}
+
+.forge-card-img {
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.forge-card:hover .forge-card-img {
+  transform: scale(1.06);
+}
+
+/* Forge Text Mask Line Reveal Container */
+.forge-mask-line {
+  display: block;
+  overflow: hidden;
+}
+
+
