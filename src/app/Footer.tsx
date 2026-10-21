@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -7,6 +8,12 @@ import { ArrowRight, Phone, Mail, MapPin } from "lucide-react";
 import { ForgeButton, LetterRoll } from "@/components/SharedUI";
 
 export default function Footer() {
+  const [currentYear, setCurrentYear] = useState<number | string>("2026");
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   const scrollToTop = () => {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -207,7 +214,7 @@ export default function Footer() {
           style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.2rem" }}
         >
           <p style={{ color: "#555", fontSize: "0.8rem", letterSpacing: "0.5px" }}>
-            © {new Date().getFullYear()} Vivid Interiors Studio LLP. All rights reserved.
+            © {currentYear} Vivid Interiors Studio LLP. All rights reserved.
           </p>
           <div style={{ display: "flex", gap: "2rem" }}>
             {["Privacy Policy", "Terms of Service", "Design Guidelines", "Cookie Preferences"].map((l, i) => (
