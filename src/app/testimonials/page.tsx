@@ -100,6 +100,45 @@ const reviews: Review[] = [
     body: "The custom velvet fluted headboard and the glass walk-in wardrobe with automated recessed lighting feel like a presidential suite in Milan. The 10-year warranty and the professionalism of their on-site team is something rare in India.",
     img: "/images/service_bedroom.jpg",
   },
+  {
+    id: "7",
+    name: "Payal Suryavanshi",
+    role: "Homeowner",
+    project: "Model Colony 3BHK Residence",
+    location: "Model Colony, Pune",
+    category: "Apartment",
+    rating: 5,
+    date: "December 2025",
+    headline: "Unmatched integrity: Zero commissions, absolute transparency.",
+    body: "Amazing experience! I contacted Vivid Interiors to design and execute my 3BHK home in Model Colony, Pune. When I went with them to select materials like veneers and marbles, the vendor whispered: 'Vivid Interiors comes under the very few architects who never take any kickback or extra favor from suppliers.' That became the reason we signed immediately. Their clear mindset avoids issues, and their BOQ was completely transparent.",
+    img: "/images/project_villa.jpg",
+  },
+  {
+    id: "8",
+    name: "Abhishek Siddhaling Patil",
+    role: "Senior Tech Professional",
+    project: "Wakad Turnkey Residence",
+    location: "Wakad, Pune",
+    category: "Apartment",
+    rating: 5,
+    date: "November 2025",
+    headline: "They took us to completed sites before asking us to sign.",
+    body: "Hiring an interior designer is difficult because of fraudulent practices in the market. We visited multiple studios before finalizing Vivid Interiors. They took us to their completed project handovers in Pune, and we personally verified their joinery quality. The billing cycle was transparent and milestone-based. Highly recommended!",
+    img: "/images/design_ideas.jpg",
+  },
+  {
+    id: "9",
+    name: "Pramod & Family",
+    role: "Business Executive",
+    project: "The Kothrud Residence",
+    location: "Kothrud, Pune",
+    category: "Apartment",
+    rating: 5,
+    date: "September 2025",
+    headline: "The time they invested in finishing was worth every single day.",
+    body: "We renovated our home with Vivid Interiors. The team responded to our requirements fast so we could understand the commercials. Initially the work progressed rapidly; then they spent deep time on finishing and precision joints. The final delivered product is fantastic and elevated our home aesthetic beyond expectations.",
+    img: "/images/project_penthouse.jpg",
+  },
 ];
 
 const categories = ["All", "Villa", "Penthouse", "Apartment", "Commercial"];
@@ -130,8 +169,8 @@ export default function TestimonialsPage() {
       <MarqueeTicker text="4.9 ★ Rating on Google & Houzz ✦ 98% Referral Rate ✦ 450+ Homes Handed Over ✦ 100% On-Time Turnkey Delivery ✦" />
 
       {/* ═══════════════ METRICS ═══════════════ */}
-      <section style={{ padding: "6.5rem 8%", background: "#faf9f6" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "3rem", textAlign: "center" }}>
+      <section className="responsive-section" style={{ background: "#faf9f6" }}>
+        <div className="responsive-compact-grid" style={{ textAlign: "center" }}>
           {[
             { num: 4.9, suffix: " ★", label: "Average Client Rating" },
             { num: 98, suffix: "%", label: "Client Referral Rate" },
@@ -157,7 +196,7 @@ export default function TestimonialsPage() {
       </section>
 
       {/* ═══════════════ TESTIMONIALS LIST ═══════════════ */}
-      <section style={{ padding: "8rem 8%", background: "#fff" }}>
+      <section className="responsive-section" style={{ background: "#fff" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4rem", flexWrap: "wrap", gap: "1.5rem" }}>
           <div>
             <span style={{ fontSize: "0.72rem", letterSpacing: "3px", textTransform: "uppercase", color: "#e8651c", display: "block", marginBottom: "0.5rem" }}>
@@ -183,7 +222,7 @@ export default function TestimonialsPage() {
 
         <motion.div
           layout
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "3rem" }}
+          className="responsive-cards-grid"
         >
           <AnimatePresence>
             {filteredReviews.map((r, idx) => (
@@ -256,7 +295,7 @@ export default function TestimonialsPage() {
           </h2>
         </Reveal>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2.5rem", alignItems: "center" }}>
+        <div className="responsive-logo-grid">
           {[
             { name: "Architectural Digest", note: "Top 50 Indian Interior Practices 2025" },
             { name: "Elle Decor India", note: "Best Residential Duplex Architecture" },

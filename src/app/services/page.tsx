@@ -182,7 +182,7 @@ export default function ServicesPage() {
       <MarqueeTicker text="Residential Architecture ✦ Commercial Workplaces ✦ Turnkey Contracting ✦ Custom Millwork ✦ 3D VR Walkthroughs ✦" />
 
       {/* ═══════════════ SERVICES SHOWCASE ═══════════════ */}
-      <section style={{ padding: "8rem 8%", background: "#faf9f6" }}>
+      <section className="responsive-section" style={{ background: "#faf9f6" }}>
         <Reveal>
           <span style={{ fontSize: "0.72rem", letterSpacing: "3px", textTransform: "uppercase", color: "#e8651c", display: "block", marginBottom: "1rem", textAlign: "center" }}>
             [ What We Deliver ]
@@ -198,12 +198,7 @@ export default function ServicesPage() {
             return (
               <div
                 key={service.num}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: isEven ? "1.1fr 1fr" : "1fr 1.1fr",
-                  gap: "5rem",
-                  alignItems: "center",
-                }}
+                className={isEven ? "responsive-two-col-reverse site-max-width" : "responsive-two-col site-max-width"}
               >
                 {/* Text column */}
                 <div style={{ order: isEven ? 2 : 1 }}>
@@ -416,8 +411,8 @@ export default function ServicesPage() {
       </section>
 
       {/* ═══════════════ SERVICE FAQ ═══════════════ */}
-      <section style={{ padding: "8rem 8%", background: "#faf9f6" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "start" }}>
+      <section className="responsive-section" style={{ background: "#faf9f6" }}>
+        <div className="responsive-equal-two-col site-max-width">
           <Reveal direction="left">
             <span style={{ fontSize: "0.72rem", letterSpacing: "3px", textTransform: "uppercase", color: "#e8651c", display: "block", marginBottom: "1rem" }}>
               [ Clarifications ]

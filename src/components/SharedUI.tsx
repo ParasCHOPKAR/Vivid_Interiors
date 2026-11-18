@@ -26,6 +26,26 @@ export function LetterRoll({ text }: { text: string }) {
   );
 }
 
+/* ─── Menu Fluid Roll Component (Zero Clipping for Italic Serif) ─── */
+export function MenuLetterRoll({ text }: { text: string }) {
+  return (
+    <span className="menu-roll-wrapper">
+      {text.split("").map((char, i) => (
+        <span
+          key={i}
+          className="menu-roll-char"
+          style={{
+            transitionDelay: `${i * 0.022}s`,
+            whiteSpace: char === " " ? "pre" : "normal",
+          }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /* ─── Forge Shimmer Button ─── */
 export function ForgeButton({
   href,

@@ -1,822 +1,783 @@
 "use client";
 
-import React, { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  MotionValue,
-} from "framer-motion";
+import ForgeScrollHero from "@/components/ForgeScrollHero";
+import { LetterRoll } from "@/components/SharedUI";
 
-/* ─────────────────────────────────────────────────────────────
-   HELPER: Word that blurs & fades OUT in reverse on scroll
-   (Used for Stage 1: "For Those Who Refuse Ordinary")
-   ───────────────────────────────────────────────────────────── */
-function BlurOutWord({
-  word,
-  progress,
-  range,
-}: {
-  word: string;
-  progress: MotionValue<number>;
-  range: [number, number];
-}) {
-  const opacity = useTransform(progress, range, [1, 0]);
-  const blurVal = useTransform(progress, range, [0, 16]);
-  const y = useTransform(progress, range, [0, -8]);
-  const filter = useTransform(blurVal, (v) => `blur(${v}px)`);
+/* ═════════════════════════════════════════════════════════════════════════
+   VIVID INTERIORS — ABOUT US PAGE
+   Content & Photos sourced directly from vividinteriorspune.com/about/
+   Architectural, Interior & Turnkey Contracting | Located in Pune since 2018
+   ═════════════════════════════════════════════════════════════════════════ */
 
-  return (
-    <motion.span
-      style={{
-        opacity,
-        filter,
-        y,
-        display: "inline-block",
-        marginRight: "0.28em",
-        willChange: "transform, opacity, filter",
-      }}
-    >
-      {word}
-    </motion.span>
-  );
-}
+const CLIENTS = [
+  { name: "POSCO", logo: "/images/client_posco.webp", category: "Global Enterprise" },
+  { name: "Symbiosis", logo: "/images/client_symbiosis.webp", category: "Educational Institution" },
+  { name: "Ami Polymer", logo: "/images/client_ami_polymer.webp", category: "Industrial Solutions" },
+  { name: "Bookavibe", logo: "/images/client_bookavibe.webp", category: "Commercial Hospitality" },
+  { name: "Public School", logo: "/images/client_public_school.webp", category: "Campus Infrastructure" },
+  { name: "Tots Preschool", logo: "/images/client_tots.webp", category: "Childcare Architecture" },
+];
 
-/* ─────────────────────────────────────────────────────────────
-   HELPER: Word that unblurs & fades IN sequentially on scroll
-   (Used for Stage 2: "We Don't Modify ... We Build Them For You")
-   ───────────────────────────────────────────────────────────── */
-function BlurInWord({
-  word,
-  progress,
-  inRange,
-}: {
-  word: string;
-  progress: MotionValue<number>;
-  inRange: [number, number];
-}) {
-  const opacity = useTransform(progress, inRange, [0, 1]);
-  const blurVal = useTransform(progress, inRange, [16, 0]);
-  const y = useTransform(progress, inRange, [12, 0]);
-  const filter = useTransform(blurVal, (v) => `blur(${v}px)`);
+const WHY_CHOOSE_US = [
+  {
+    num: "01",
+    title: "Conceptual Development & Space Planning",
+    desc: "Bespoke spatial layouts and 3D architectural models tailored to optimize natural lighting, ventilation, and daily functional flow.",
+  },
+  {
+    num: "02",
+    title: "Selection of Noble Materials",
+    desc: "Rigorous curation of authentic veneers, Italian marble, certified marine ply, German hardware, and tactile acoustic textiles.",
+  },
+  {
+    num: "03",
+    title: "Multi-Stage Site Inspections",
+    desc: "Uncompromising on-site supervision by licensed architects and engineers, guaranteeing millimeter precision at every milestone.",
+  },
+  {
+    num: "04",
+    title: "End-to-End Construction Management",
+    desc: "Turnkey execution with vetted master craftsmen, specialized subcontractors, transparent bill of quantities, and strict handover dates.",
+  },
+  {
+    num: "05",
+    title: "AEC Engineering & IT Integration",
+    desc: "Utilizing modern Information Technology, comprehensive CAD/MEP schematics, and structural coordination for flawless execution.",
+  },
+  {
+    num: "06",
+    title: "Post-Handover Support & 10-Yr Warranty",
+    desc: "Experience the difference with dedicated customer care, proactive maintenance schedules, and unwavering responsiveness.",
+  },
+];
 
-  return (
-    <motion.span
-      style={{
-        opacity,
-        filter,
-        y,
-        display: "inline-block",
-        marginRight: "0.28em",
-        willChange: "transform, opacity, filter",
-      }}
-    >
-      {word}
-    </motion.span>
-  );
-}
+const GALLERY_SHOWCASE = [
+  {
+    title: "Luxury Living Room & Spatial Architecture",
+    category: "Residential Architecture",
+    image: "/images/vivid_about_dsc07460.webp",
+  },
+  {
+    title: "Bespoke Master Suite & Fluted Wall Joinery",
+    category: "Master Bedroom",
+    image: "/images/vivid_about_dsc07453.webp",
+  },
+  {
+    title: "Architectural Ceiling & Ambient Luminaire",
+    category: "Dining & Social Suite",
+    image: "/images/vivid_about_dsc07433.webp",
+  },
+  {
+    title: "Factory-Crafted Millwork & Precision Joinery",
+    category: "Modular Craftsmanship",
+    image: "/images/vivid_about_dsc07443.webp",
+  },
+  {
+    title: "Biophilic Vertical Living Wall Architecture",
+    category: "Landscape & Interior Greenery",
+    image: "/images/vivid_vertical_green_wall.webp",
+  },
+  {
+    title: "Custom Wardrobes & Bronze Accent Finishes",
+    category: "Storage Architecture",
+    image: "/images/vivid_about_dsc07477.webp",
+  },
+];
 
-export interface ForgeScrollHeroProps {
-  /** Stage 1 subtitle at bottom center */
-  subtitle?: string;
-  /** Stage 2 words (Line 1 & Line 2) */
-  stage2Line1?: string[];
-  stage2Line2?: string[];
-  /** Stage 1 three images (left, center zoom subject, right) */
-  leftImage?: string;
-  centerImage?: string;
-  rightImage?: string;
-  /** Stage 2 dark interior image (after zooming through center subject) */
-  interiorImage?: string;
-  /** Stage 3 & 4 macro craftsmanship image inside expanding portal */
-  portalImage?: string;
-  /** Partner / Atelier names in the Stage 4 bottom-left marquee */
-  marqueeBrands?: string[];
-  /** CTA destination */
-  ctaHref?: string;
-  ctaText?: string;
-}
-
-export default function ForgeScrollHero({
-  subtitle = "A luxury architectural atelier for bespoke styling, spatial performance and craftsmanship.",
-  stage2Line1 = ["We", "Don’t", "Modify", "Spaces"],
-  stage2Line2 = ["We", "Build", "Them", "For", "You"],
-  leftImage = "/images/about_studio.jpg",
-  centerImage = "/images/project_villa.jpg",
-  rightImage = "/images/service_commercial.jpg",
-  interiorImage = "/images/design_ideas.jpg",
-  portalImage = "/images/locations_studio.jpg",
-  marqueeBrands = [
-    "MINOTTI",
-    "POLIFORM",
-    "BOFFI",
-    "FLOS",
-    "BAXTER",
-    "RIMADESIO",
-    "GAGGENAU",
-  ],
-  ctaHref = "/contact",
-  ctaText = "START YOUR PROJECT",
-}: ForgeScrollHeroProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  // Smooth spring scrub so wheel/trackpad scrolling feels cinematic
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 90,
-    damping: 26,
-    restDelta: 0.0005,
-  });
-
-  /* ═══════════════════════════════════════════════════════════
-     STAGE 1: THREE SUBJECTS + REVERSE WORD BLUR (0.00 -> 0.38)
-     ═══════════════════════════════════════════════════════════ */
-  // Left subject pushes out to the left & scales up
-  const leftX = useTransform(smoothProgress, [0, 0.28], ["0%", "-145%"]);
-  const leftScale = useTransform(smoothProgress, [0, 0.28], [1, 1.45]);
-  const leftOpacity = useTransform(smoothProgress, [0, 0.22, 0.3], [1, 1, 0]);
-
-  // Right subject pushes out to the right & scales up
-  const rightX = useTransform(smoothProgress, [0, 0.28], ["0%", "145%"]);
-  const rightScale = useTransform(smoothProgress, [0, 0.28], [1, 1.45]);
-  const rightOpacity = useTransform(smoothProgress, [0, 0.22, 0.3], [1, 1, 0]);
-
-  // Center subject scales massively so camera zooms through its window/frame
-  const centerScale = useTransform(
-    smoothProgress,
-    [0, 0.2, 0.38, 0.46],
-    [1, 1.65, 3.8, 5.2]
-  );
-  const centerY = useTransform(
-    smoothProgress,
-    [0, 0.2, 0.42],
-    ["0%", "6%", "18%"]
-  );
-  const centerOpacity = useTransform(
-    smoothProgress,
-    [0, 0.34, 0.44],
-    [1, 1, 0]
-  );
-
-  // Stage 1 Subtitle at the bottom fades & gets covered by the zooming center image
-  const subtitleOpacity = useTransform(smoothProgress, [0, 0.14], [1, 0]);
-  const subtitleY = useTransform(smoothProgress, [0, 0.14], [0, 20]);
-  const subtitleBlur = useTransform(smoothProgress, [0, 0.14], [0, 8]);
-  const subtitleFilter = useTransform(subtitleBlur, (v) => `blur(${v}px)`);
-
-  // Studio floor glow fades out as we enter the interior
-  const floorOpacity = useTransform(smoothProgress, [0, 0.25, 0.38], [1, 0.6, 0]);
-
-  /* ═══════════════════════════════════════════════════════════
-     STAGE 2: INTERIOR + WORD-BY-WORD BLUR REVEAL (0.32 -> 0.68)
-     ═══════════════════════════════════════════════════════════ */
-  const interiorOpacity = useTransform(
-    smoothProgress,
-    [0.28, 0.4, 0.56, 0.68],
-    [0, 0.85, 0.55, 0.18]
-  );
-  const interiorScale = useTransform(
-    smoothProgress,
-    [0.28, 0.65],
-    [1.18, 1.0]
-  );
-
-  // Entire Stage 2 text block blurs into the background as the Stage 3 portal opens
-  const stage2ContainerOpacity = useTransform(
-    smoothProgress,
-    [0.32, 0.36, 0.6, 0.78, 0.86],
-    [0, 1, 1, 0.38, 0]
-  );
-  const stage2ContainerBlur = useTransform(
-    smoothProgress,
-    [0.56, 0.68, 0.82],
-    [0, 8, 16]
-  );
-  const stage2ContainerFilter = useTransform(
-    stage2ContainerBlur,
-    (v) => `blur(${v}px)`
-  );
-  const stage2ContainerScale = useTransform(
-    smoothProgress,
-    [0.56, 0.82],
-    [1, 0.95]
-  );
-
-  /* ═══════════════════════════════════════════════════════════
-     STAGE 3 & 4: EXPANDING CENTER PORTAL (0.58 -> 1.00)
-     ═══════════════════════════════════════════════════════════ */
-  // Portal visibility
-  const portalOpacity = useTransform(smoothProgress, [0.57, 0.61], [0, 1]);
-
-  // Clip-path inset values: starts as a tiny center rectangle, expands to full frame
-  const clipInsetY = useTransform(
-    smoothProgress,
-    [0.58, 0.65, 0.84],
-    [46, 34, 0]
-  );
-  const clipInsetX = useTransform(
-    smoothProgress,
-    [0.58, 0.65, 0.84],
-    [42, 34, 0]
-  );
-  const portalClipPath = useTransform(
-    [clipInsetY, clipInsetX],
-    ([y, x]) => `inset(${y}% ${x}% ${y}% ${x}% round 2px)`
-  );
-
-  // Inner portal background image subtle zoom out
-  const portalImgScale = useTransform(
-    smoothProgress,
-    [0.58, 0.95],
-    [1.22, 1.0]
-  );
-
-  // Inner portal content subtle entrance
-  const portalDetailsOpacity = useTransform(
-    smoothProgress,
-    [0.72, 0.86],
-    [0, 1]
-  );
-  const portalDetailsY = useTransform(smoothProgress, [0.72, 0.86], [18, 0]);
-
-  // Bottom progress bar width
-  const progressBarScaleX = useTransform(smoothProgress, [0, 1], [0.02, 1]);
-
-  // Total words in Stage 2 for staggered unblur calculation
-  const totalStage2Words = stage2Line1.length + stage2Line2.length;
-  const getStage2WordRange = (index: number): [number, number] => {
-    const startBase = 0.35;
-    const endBase = 0.54;
-    const span = endBase - startBase;
-    const step = span / totalStage2Words;
-    const start = startBase + index * step * 0.85;
-    const end = Math.min(endBase, start + step * 1.6);
-    return [start, end];
+export default function AboutPage() {
+  const handleOpenConsultation = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("open-consultation"));
+    }
   };
 
   return (
-    <section
-      ref={containerRef}
-      style={{
-        position: "relative",
-        height: "520vh",
-        background: "#050505",
-        color: "#fff",
-        userSelect: "none",
-      }}
-    >
-      {/* ═══════════════ STICKY VIEWPORT ═══════════════ */}
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          width: "100%",
-          overflow: "hidden",
-          background: "#050505",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {/* Subtle dark architectural carbon/linen texture background (visible in Stages 2-4) */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage:
-              "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0), radial-gradient(rgba(255,255,255,0.02) 1px, transparent 0)",
-            backgroundSize: "32px 32px",
-            backgroundPosition: "0 0, 16px 16px",
-            opacity: 0.7,
-            pointerEvents: "none",
-          }}
-        />
+    <div style={{ background: "var(--bg-page, #faf9f6)", color: "var(--text-primary, #111)" }}>
+      {/* ─────────────────────────────────────────────────────────────
+          1. 3-STAGE CINEMATIC SCROLL HERO (PUNE CRAFTSMANSHIP)
+          Retaining 100% of exact animations & layout from ForgeScrollHero
+          Using real high-res Vivid Interiors photos & official tagline
+          ───────────────────────────────────────────────────────────── */}
+      <ForgeScrollHero
+        subtitle="Where Imagination Meets Interiors — Architectural, Interior, and Contracting company in Pune since 2018."
+        stage2Line1={["Where", "Imagination"]}
+        stage2Line2={["Meets", "Interiors"]}
+        leftImage="/images/vivid_about_dsc07443.webp"
+        centerImage="/images/vivid_about_dsc07460.webp"
+        rightImage="/images/vivid_about_dsc07477.webp"
+        interiorImage="/images/vivid_about_dsc07453.webp"
+        portalImage="/images/vivid_about_dsc07376.webp"
+        marqueeBrands={[
+          "POSCO",
+          "SYMBIOSIS",
+          "AMI POLYMER",
+          "BOOKAVIBE",
+          "TOTS PRESCHOOL",
+          "PUNE RESIDENCES",
+          "VIVID INTERIORS",
+        ]}
+        ctaHref="/contact"
+        ctaText="REQUEST A CALL"
+      />
 
-        {/* ─────────────────────────────────────────────────────────
-           STAGE 1: STUDIO FLOOR + HEADLINE 1 + THREE SUBJECTS
-           ───────────────────────────────────────────────────────── */}
-        <motion.div
-          style={{
-            position: "absolute",
-            inset: 0,
-            opacity: floorOpacity,
-            background:
-              "radial-gradient(ellipse 85% 32% at 50% 88%, rgba(255,255,255,0.09) 0%, rgba(20,20,20,0.4) 45%, rgba(5,5,5,1) 80%)",
-            pointerEvents: "none",
-          }}
-        />
+      {/* ─────────────────────────────────────────────────────────────
+          2. PHILOSOPHY & STORY SECTION
+          Exact content from vividinteriorspune.com/about/
+          ───────────────────────────────────────────────────────────── */}
+      <section className="responsive-section" style={{ background: "var(--bg-page, #faf9f6)" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div className="responsive-two-col site-max-width">
+            <div>
+              <span
+                style={{
+                  fontSize: "0.72rem",
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#e8651c",
+                  display: "block",
+                  marginBottom: "1.2rem",
+                  fontWeight: 600,
+                }}
+              >
+                [ Where Imagination Meets Interiors ]
+              </span>
+              <h2
+                className="serif"
+                style={{
+                  fontSize: "clamp(2.4rem, 4vw, 3.8rem)",
+                  lineHeight: 1.12,
+                  marginBottom: "2rem",
+                  fontWeight: 400,
+                  color: "var(--text-primary, #111)",
+                }}
+              >
+                Curating Spatial Ideas<br />
+                <em>In Pune Since 2018</em>
+              </h2>
 
-        {/* Stage 1 Headline: "For Those Who / Refuse Ordinary" */}
-        <div
-          style={{
-            position: "absolute",
-            top: "14%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            textAlign: "center",
-            zIndex: 10,
-            width: "90%",
-            maxWidth: "900px",
-            pointerEvents: "none",
-          }}
-        >
-          <h1
-            className="serif"
-            style={{
-              fontSize: "clamp(2.8rem, 5.6vw, 5.4rem)",
-              fontWeight: 400,
-              lineHeight: 1.06,
-              letterSpacing: "-0.02em",
-              color: "#fff",
-              margin: 0,
-            }}
-          >
-            {/* Line 1: "For Those Who" (fades out after Line 2) */}
-            <span style={{ display: "block" }}>
-              <BlurOutWord
-                word="For"
-                progress={smoothProgress}
-                range={[0.18, 0.28]}
-              />
-              <BlurOutWord
-                word="Those"
-                progress={smoothProgress}
-                range={[0.15, 0.25]}
-              />
-              <BlurOutWord
-                word="Who"
-                progress={smoothProgress}
-                range={[0.11, 0.22]}
-              />
-            </span>
-            {/* Line 2: "Refuse Ordinary" ("Ordinary" blurs first, then "Refuse") */}
-            <span style={{ display: "block" }}>
-              <BlurOutWord
-                word="Refuse"
-                progress={smoothProgress}
-                range={[0.07, 0.18]}
-              />
-              <BlurOutWord
-                word="Ordinary"
-                progress={smoothProgress}
-                range={[0.02, 0.13]}
-              />
-            </span>
-          </h1>
-        </div>
+              <p style={{ lineHeight: 1.9, color: "var(--text-secondary, #333)", marginBottom: "1.4rem", fontSize: "1.05rem" }}>
+                <strong>VIVID INTERIORS</strong> is an Architectural, Interior, and Contracting company located in <strong>Pune since 2018</strong>. We have committed to steadily curating spatial ideas that meet the demands of the ever-evolving AEC industry with design deliverables that are not only aesthetically pleasing but also satisfy client requirements.
+              </p>
 
-        {/* Stage 1 Three-Subject Lineup */}
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: "1440px",
-            height: "100%",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            padding: "0 4% 8%",
-            zIndex: 15,
-            pointerEvents: "none",
-          }}
-        >
-          {/* LEFT SUBJECT */}
-          <motion.div
-            style={{
-              x: leftX,
-              scale: leftScale,
-              opacity: leftOpacity,
-              width: "28%",
-              aspectRatio: "4 / 3",
-              position: "relative",
-              marginRight: "3%",
-              marginBottom: "1%",
-              borderRadius: "3px",
-              overflow: "hidden",
-              boxShadow: "0 30px 70px rgba(0,0,0,0.85)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              transformOrigin: "right center",
-            }}
-          >
-            <Image
-              src={leftImage}
-              alt="Left Architectural Showcase"
-              fill
-              priority
-              style={{ objectFit: "cover", filter: "contrast(1.08) brightness(0.85)" }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)",
-              }}
-            />
-          </motion.div>
+              <p style={{ lineHeight: 1.9, color: "var(--text-muted, #555)", marginBottom: "1.4rem", fontSize: "0.98rem" }}>
+                We at Vivid Interiors are driven by the ethos of <em>Design Excellence, Service Efficiency, Responsiveness,</em> and a strong commitment towards all projects and scales undertaken by us. Our goal is always to create designs tailored to our clients&apos; unique personal styles and practical needs. We optimize available resources to design buildings and interiors that are driven not only by the beauty of form but value in function.
+              </p>
 
-          {/* CENTER SUBJECT (Zooms into the camera) */}
-          <motion.div
-            style={{
-              scale: centerScale,
-              y: centerY,
-              opacity: centerOpacity,
-              width: "34%",
-              aspectRatio: "16 / 10",
-              position: "relative",
-              zIndex: 25,
-              borderRadius: "3px",
-              overflow: "hidden",
-              boxShadow: "0 35px 90px rgba(0,0,0,0.95)",
-              border: "1px solid rgba(232,101,28,0.28)",
-              transformOrigin: "center 42%",
-            }}
-          >
-            <Image
-              src={centerImage}
-              alt="Center Flagship Residence"
-              fill
-              priority
-              style={{ objectFit: "cover", filter: "contrast(1.1)" }}
-            />
-            {/* Dark interior window vignette at center so zooming in transitions seamlessly */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "radial-gradient(circle at 50% 42%, rgba(10,10,10,0.25) 0%, rgba(0,0,0,0.65) 100%)",
-              }}
-            />
-          </motion.div>
+              <div
+                style={{
+                  padding: "1.4rem 1.8rem",
+                  background: "rgba(232, 101, 28, 0.06)",
+                  borderLeft: "3px solid #e8651c",
+                  marginBottom: "2rem",
+                  borderRadius: "0 6px 6px 0",
+                }}
+              >
+                <p
+                  className="serif"
+                  style={{
+                    margin: 0,
+                    fontSize: "1.1rem",
+                    fontStyle: "italic",
+                    color: "var(--text-primary, #111)",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  &ldquo;To understand the customer&apos;s needs and exceed expectations.&rdquo;
+                </p>
+                <span style={{ fontSize: "0.78rem", color: "#e8651c", letterSpacing: "1px", textTransform: "uppercase", display: "block", marginTop: "0.5rem", fontWeight: 600 }}>
+                  — Vivid Interiors Core Creed
+                </span>
+              </div>
 
-          {/* RIGHT SUBJECT */}
-          <motion.div
-            style={{
-              x: rightX,
-              scale: rightScale,
-              opacity: rightOpacity,
-              width: "28%",
-              aspectRatio: "4 / 3",
-              position: "relative",
-              marginLeft: "3%",
-              marginBottom: "1%",
-              borderRadius: "3px",
-              overflow: "hidden",
-              boxShadow: "0 30px 70px rgba(0,0,0,0.85)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              transformOrigin: "left center",
-            }}
-          >
-            <Image
-              src={rightImage}
-              alt="Right Architectural Showcase"
-              fill
-              priority
-              style={{ objectFit: "cover", filter: "contrast(1.08) brightness(0.85)" }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)",
-              }}
-            />
-          </motion.div>
-        </div>
+              <p style={{ lineHeight: 1.9, color: "var(--text-muted, #555)", marginBottom: "2.8rem", fontSize: "0.95rem" }}>
+                We have a strong network amongst local craftsmen and subcontractors to ensure that every project is completed to the highest standards. We strike the right balance between efficient engineering and thoughtful development by applying the latest aesthetics and technology, delivering drawings and documents as committed. This dedication to quality and professionalism together with a high level of customer service are the key to our expanding nationwide clientele.
+              </p>
 
-        {/* Stage 1 Bottom Center Subtitle */}
-        <motion.p
-          style={{
-            opacity: subtitleOpacity,
-            y: subtitleY,
-            filter: subtitleFilter,
-            position: "absolute",
-            bottom: "5.5%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            textAlign: "center",
-            maxWidth: "420px",
-            fontSize: "0.92rem",
-            lineHeight: 1.55,
-            color: "rgba(255,255,255,0.85)",
-            zIndex: 12,
-            margin: 0,
-            pointerEvents: "none",
-          }}
-        >
-          {subtitle}
-        </motion.p>
+              {/* Core Pillars */}
+              <div className="responsive-pillars-grid" style={{ marginBottom: "3rem" }}>
+                <div style={{ borderLeft: "2px solid #e8651c", paddingLeft: "1.2rem" }}>
+                  <h4 style={{ fontSize: "1.02rem", fontWeight: 600, color: "var(--text-primary, #111)", marginBottom: "0.3rem" }}>
+                    Design Excellence
+                  </h4>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted, #777)", lineHeight: 1.6, margin: 0 }}>
+                    Aesthetic purity and functional rigor combined with noble materials.
+                  </p>
+                </div>
+                <div style={{ borderLeft: "2px solid #e8651c", paddingLeft: "1.2rem" }}>
+                  <h4 style={{ fontSize: "1.02rem", fontWeight: 600, color: "var(--text-primary, #111)", marginBottom: "0.3rem" }}>
+                    Service Efficiency
+                  </h4>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted, #777)", lineHeight: 1.6, margin: 0 }}>
+                    Factory-made precision joinery, milestone tracking, and strict timelines.
+                  </p>
+                </div>
+                <div style={{ borderLeft: "2px solid #e8651c", paddingLeft: "1.2rem" }}>
+                  <h4 style={{ fontSize: "1.02rem", fontWeight: 600, color: "var(--text-primary, #111)", marginBottom: "0.3rem" }}>
+                    Responsiveness
+                  </h4>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted, #777)", lineHeight: 1.6, margin: 0 }}>
+                    Direct communication with architects and guaranteed 24-hr query resolution.
+                  </p>
+                </div>
+                <div style={{ borderLeft: "2px solid #e8651c", paddingLeft: "1.2rem" }}>
+                  <h4 style={{ fontSize: "1.02rem", fontWeight: 600, color: "var(--text-primary, #111)", marginBottom: "0.3rem" }}>
+                    Strong Commitment
+                  </h4>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted, #777)", lineHeight: 1.6, margin: 0 }}>
+                    Transparent BOQ, verified materials, and zero compromise on execution.
+                  </p>
+                </div>
+              </div>
 
-        {/* ─────────────────────────────────────────────────────────
-           STAGE 2: DARK INTERIOR SANCTUARY + WORD-BY-WORD UNBLUR
-           ───────────────────────────────────────────────────────── */}
-        <motion.div
-          style={{
-            position: "absolute",
-            inset: 0,
-            opacity: interiorOpacity,
-            scale: interiorScale,
-            zIndex: 20,
-            pointerEvents: "none",
-          }}
-        >
-          <Image
-            src={interiorImage}
-            alt="Interior Sanctuary Atmosphere"
-            fill
-            style={{
-              objectFit: "cover",
-              filter: "brightness(0.38) contrast(1.15) saturate(0.85)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "radial-gradient(circle at 50% 50%, transparent 20%, #050505 95%)",
-            }}
-          />
-        </motion.div>
-
-        {/* Stage 2 Center Typography ("We Don't Modify Spaces / We Build Them For You") */}
-        <motion.div
-          style={{
-            opacity: stage2ContainerOpacity,
-            filter: stage2ContainerFilter,
-            scale: stage2ContainerScale,
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            zIndex: 28,
-            padding: "0 5%",
-            pointerEvents: "none",
-          }}
-        >
-          <h2
-            className="serif"
-            style={{
-              fontSize: "clamp(2.5rem, 5.2vw, 5rem)",
-              fontWeight: 400,
-              lineHeight: 1.12,
-              letterSpacing: "-0.02em",
-              color: "#fff",
-              margin: 0,
-            }}
-          >
-            {/* Line 1 */}
-            <span style={{ display: "block" }}>
-              {stage2Line1.map((word, idx) => (
-                <BlurInWord
-                  key={`l1-${idx}`}
-                  word={word}
-                  progress={smoothProgress}
-                  inRange={getStage2WordRange(idx)}
-                />
-              ))}
-            </span>
-            {/* Line 2 */}
-            <span style={{ display: "block" }}>
-              {stage2Line2.map((word, idx) => (
-                <BlurInWord
-                  key={`l2-${idx}`}
-                  word={word}
-                  progress={smoothProgress}
-                  inRange={getStage2WordRange(stage2Line1.length + idx)}
-                />
-              ))}
-            </span>
-          </h2>
-        </motion.div>
-
-        {/* ─────────────────────────────────────────────────────────
-           STAGE 3 & 4: EXPANDING CENTER PORTAL SHOWCASE
-           ───────────────────────────────────────────────────────── */}
-        <motion.div
-          style={{
-            opacity: portalOpacity,
-            clipPath: portalClipPath,
-            position: "relative",
-            width: "74vw",
-            height: "72vh",
-            maxWidth: "1280px",
-            zIndex: 35,
-            overflow: "hidden",
-            background: "#0c0c0c",
-            boxShadow: "0 40px 100px rgba(0,0,0,0.9)",
-          }}
-        >
-          {/* Macro Craftsmanship Image inside the portal */}
-          <motion.div
-            style={{
-              position: "absolute",
-              inset: 0,
-              scale: portalImgScale,
-            }}
-          >
-            <Image
-              src={portalImage}
-              alt="Bespoke Material Craftsmanship"
-              fill
-              style={{
-                objectFit: "cover",
-                filter: "brightness(0.68) contrast(1.12)",
-              }}
-            />
-            {/* Multi-stop gradient overlay matching Screenshots 7 & 8 */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.78) 100%)",
-              }}
-            />
-          </motion.div>
-
-          {/* TOP-LEFT PORTAL HEADLINE: "Our Approach / To Every Build" */}
-          <div
-            style={{
-              position: "absolute",
-              top: "6%",
-              left: "-1.2%",
-              zIndex: 5,
-              pointerEvents: "none",
-            }}
-          >
-            <h2
-              className="serif"
-              style={{
-                fontSize: "clamp(2.6rem, 5.2vw, 5.1rem)",
-                fontWeight: 400,
-                lineHeight: 1.05,
-                letterSpacing: "-0.02em",
-                color: "#fff",
-                margin: 0,
-              }}
-            >
-              <span style={{ display: "block" }}>Our Approach</span>
-              <span style={{ display: "block" }}>To Every Build</span>
-            </h2>
-          </div>
-
-          {/* BOTTOM-LEFT INFINITE BRAND / PARTNER MARQUEE */}
-          <motion.div
-            style={{
-              opacity: portalDetailsOpacity,
-              position: "absolute",
-              bottom: "13%",
-              left: 0,
-              width: "62%",
-              overflow: "hidden",
-              zIndex: 5,
-              WebkitMaskImage:
-                "linear-gradient(to right, transparent 0%, black 14%, black 82%, transparent 100%)",
-              maskImage:
-                "linear-gradient(to right, transparent 0%, black 14%, black 82%, transparent 100%)",
-            }}
-          >
-            <motion.div
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{
-                repeat: Infinity,
-                ease: "linear",
-                duration: 22,
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4rem",
-                width: "max-content",
-              }}
-            >
-              {[...marqueeBrands, ...marqueeBrands].map((brand, i) => (
-                <div
-                  key={i}
+              <div style={{ display: "flex", gap: "1.2rem", flexWrap: "wrap", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={handleOpenConsultation}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    padding: "0.4rem 1rem",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: "999px",
+                    gap: "0.6rem",
+                    padding: "1rem 2.2rem",
+                    background: "#e8651c",
+                    color: "#fff",
+                    border: "none",
                     fontSize: "0.75rem",
-                    letterSpacing: "3px",
+                    letterSpacing: "1.5px",
                     textTransform: "uppercase",
-                    color: "rgba(255,255,255,0.85)",
-                    whiteSpace: "nowrap",
-                    background: "rgba(0,0,0,0.25)",
-                    backdropFilter: "blur(4px)",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 10px 25px -5px rgba(232, 101, 28, 0.4)",
                   }}
                 >
-                  {brand}
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
+                  <span>REQUEST A CALL</span>
+                  <span>→</span>
+                </button>
+                <Link
+                  href="/projects"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    padding: "1rem 2.2rem",
+                    border: "1px solid var(--border-subtle, rgba(0,0,0,0.2))",
+                    color: "var(--text-primary, #111)",
+                    fontSize: "0.75rem",
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    textDecoration: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  VIEW COMPLETED WORK
+                </Link>
+              </div>
+            </div>
 
-          {/* BOTTOM-RIGHT INTENTIONALITY COPY + GLOWING BORDER CTA */}
-          <motion.div
-            style={{
-              opacity: portalDetailsOpacity,
-              y: portalDetailsY,
-              position: "absolute",
-              bottom: "8%",
-              right: "4%",
-              maxWidth: "290px",
-              zIndex: 6,
-            }}
-          >
-            <p
+            <div style={{ position: "relative" }}>
+              <div
+                className="site-studio-img"
+                style={{
+                  position: "relative",
+                  height: "640px",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  boxShadow: "0 25px 50px -15px rgba(0,0,0,0.18)",
+                }}
+              >
+                <Image
+                  src="/images/vivid_about_dsc07460.webp"
+                  alt="Vivid Interiors Living Architecture in Pune"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
+              </div>
+
+              {/* Floating Pune Atelier Badge */}
+              <div
+                className="site-studio-badge"
+                style={{
+                  position: "absolute",
+                  bottom: "-25px",
+                  left: "-25px",
+                  background: "#0d0d0d",
+                  color: "#fff",
+                  padding: "1.5rem 2rem",
+                  borderRadius: "6px",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+                  borderLeft: "3px solid #e8651c",
+                }}
+              >
+                <span style={{ fontSize: "0.68rem", letterSpacing: "2px", color: "#e8651c", textTransform: "uppercase", display: "block" }}>
+                  ESTABLISHED 2018
+                </span>
+                <span className="serif" style={{ fontSize: "1.3rem", display: "block", marginTop: "0.2rem" }}>
+                  Erandwane, Pune
+                </span>
+                <span style={{ fontSize: "0.78rem", color: "#888", display: "block" }}>
+                  Maharashtra, India
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          3. NEW SECTION: WHY CHOOSE US
+          Directly from vividinteriorspune.com/about/ "WHY Choose US"
+          ───────────────────────────────────────────────────────────── */}
+      <section style={{ padding: "7rem 8%", background: "var(--bg-card, #f4f2ee)", borderTop: "1px solid var(--border-subtle, rgba(0,0,0,0.06))", borderBottom: "1px solid var(--border-subtle, rgba(0,0,0,0.06))" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", maxWidth: "780px", margin: "0 auto 4.5rem" }}>
+            <span
               style={{
-                fontSize: "0.88rem",
-                lineHeight: 1.6,
-                color: "rgba(255,255,255,0.82)",
+                fontSize: "0.72rem",
+                letterSpacing: "3px",
+                textTransform: "uppercase",
+                color: "#e8651c",
+                display: "block",
+                marginBottom: "1rem",
+                fontWeight: 600,
+              }}
+            >
+              [ Why Choose Us ]
+            </span>
+            <h2
+              className="serif"
+              style={{
+                fontSize: "clamp(2.2rem, 3.8vw, 3.4rem)",
+                lineHeight: 1.15,
+                fontWeight: 400,
+                color: "var(--text-primary, #111)",
                 marginBottom: "1.4rem",
               }}
             >
-              Every decision is intentional, every detail has purpose based on
-              you, your lifestyle, and your standards.
+              Comprehensive Guidance from Concept to Key Handover
+            </h2>
+            <p style={{ color: "var(--text-muted, #666)", fontSize: "1rem", lineHeight: 1.8 }}>
+              Our interior design services cater to individuals and companies seeking expert guidance in creating beautiful and functional spaces. We offer a comprehensive range of turnkey architectural and interior solutions.
             </p>
+          </div>
 
-            <Link
-              href={ctaHref}
+          <div className="responsive-cards-grid">
+            {WHY_CHOOSE_US.map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: "var(--bg-page, #ffffff)",
+                  padding: "2.5rem 2.2rem",
+                  borderRadius: "8px",
+                  border: "1px solid var(--border-subtle, rgba(0,0,0,0.08))",
+                  position: "relative",
+                  transition: "all 0.3s ease",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <span
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: "0.85rem",
+                      fontWeight: 700,
+                      color: "#e8651c",
+                      display: "block",
+                      marginBottom: "1rem",
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    {item.num}
+                  </span>
+                  <h3
+                    style={{
+                      fontSize: "1.18rem",
+                      fontWeight: 600,
+                      color: "var(--text-primary, #111)",
+                      marginBottom: "0.8rem",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "var(--text-muted, #666)",
+                      lineHeight: 1.7,
+                      margin: 0,
+                    }}
+                  >
+                    {item.desc}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    height: "2px",
+                    width: "36px",
+                    background: "rgba(232, 101, 28, 0.4)",
+                    marginTop: "2rem",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          4. NEW SECTION: OUR CLIENTS
+          Directly from vividinteriorspune.com/about/ "Our Clients"
+          "Experience the difference with our customer service."
+          ───────────────────────────────────────────────────────────── */}
+      <section style={{ padding: "6.5rem 8%", background: "#0a0a0a", color: "#fff" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", maxWidth: "680px", margin: "0 auto 3.8rem" }}>
+            <span
               style={{
-                position: "relative",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                padding: "1rem 1.8rem",
-                background: "rgba(10, 10, 10, 0.72)",
-                backdropFilter: "blur(8px)",
-                border: "1px solid rgba(255, 255, 255, 0.16)",
-                color: "#fff",
-                fontSize: "0.7rem",
-                letterSpacing: "2.5px",
+                fontSize: "0.72rem",
+                letterSpacing: "3px",
                 textTransform: "uppercase",
-                textDecoration: "none",
-                overflow: "hidden",
-                transition: "border-color 0.3s ease, background 0.3s ease",
+                color: "#e8651c",
+                display: "block",
+                marginBottom: "1rem",
+                fontWeight: 600,
               }}
             >
-              <span>{ctaText}</span>
-              {/* Subtle bottom center specular glow matching Screenshots 7 & 8 */}
+              [ Our Clients ]
+            </span>
+            <h2
+              className="serif"
+              style={{
+                fontSize: "clamp(2.2rem, 3.8vw, 3.2rem)",
+                lineHeight: 1.15,
+                fontWeight: 400,
+                color: "#fff",
+                marginBottom: "1rem",
+              }}
+            >
+              Experience The Difference With Our Customer Service
+            </h2>
+            <p style={{ color: "#999", fontSize: "0.98rem", lineHeight: 1.8 }}>
+              From prestigious international corporations to educational academies and premier residences across Pune and Maharashtra.
+            </p>
+          </div>
+
+          <div className="responsive-logo-grid">
+            {CLIENTS.map((client, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "8px",
+                  padding: "2rem 1.5rem",
+                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: "160px",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <div style={{ position: "relative", width: "120px", height: "55px", marginBottom: "1rem", filter: "brightness(0) invert(1)", opacity: 0.85 }}>
+                  <Image
+                    src={client.logo}
+                    alt={`${client.name} - Vivid Interiors Client`}
+                    fill
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
+                <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#fff", display: "block" }}>
+                  {client.name}
+                </span>
+                <span style={{ fontSize: "0.72rem", color: "#e8651c", display: "block", marginTop: "0.2rem" }}>
+                  {client.category}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          5. REAL PROJECT PHOTOGRAPHY SHOWCASE
+          High-res real photography from vividinteriorspune.com/about/
+          ───────────────────────────────────────────────────────────── */}
+      <section style={{ padding: "7.5rem 8%", background: "var(--bg-page, #faf9f6)" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem", marginBottom: "3.5rem" }}>
+            <div>
               <span
                 style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: "20%",
-                  right: "20%",
-                  height: "1px",
-                  background:
-                    "radial-gradient(circle, rgba(255,255,255,0.9) 0%, transparent 100%)",
+                  fontSize: "0.72rem",
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#e8651c",
+                  display: "block",
+                  marginBottom: "0.8rem",
+                  fontWeight: 600,
                 }}
-              />
+              >
+                [ Realized Transformations ]
+              </span>
+              <h2
+                className="serif"
+                style={{
+                  fontSize: "clamp(2.2rem, 3.6vw, 3.2rem)",
+                  lineHeight: 1.15,
+                  fontWeight: 400,
+                  color: "var(--text-primary, #111)",
+                  margin: 0,
+                }}
+              >
+                Crafted Spaces, Authentic Standards
+              </h2>
+            </div>
+            <Link
+              href="/projects"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                color: "#e8651c",
+                fontSize: "0.82rem",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              <span>EXPLORE ALL PROJECTS</span>
+              <span>→</span>
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
 
-        {/* ─────────────────────────────────────────────────────────
-           BOTTOM SCROLL PROGRESS INDICATOR LINE
-           ───────────────────────────────────────────────────────── */}
+          <div className="responsive-cards-grid">
+            {GALLERY_SHOWCASE.map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  background: "var(--bg-card, #f4f2ee)",
+                  border: "1px solid var(--border-subtle, rgba(0,0,0,0.08))",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
+                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                }}
+              >
+                <div style={{ position: "relative", height: "270px", width: "100%", overflow: "hidden" }}>
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    style={{ objectFit: "cover", transition: "transform 0.5s ease" }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "1rem",
+                      left: "1rem",
+                      background: "rgba(0,0,0,0.7)",
+                      backdropFilter: "blur(4px)",
+                      color: "#fff",
+                      padding: "0.3rem 0.8rem",
+                      borderRadius: "3px",
+                      fontSize: "0.68rem",
+                      letterSpacing: "1px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {item.category}
+                  </div>
+                </div>
+                <div style={{ padding: "1.4rem 1.6rem" }}>
+                  <h4
+                    style={{
+                      fontSize: "1.02rem",
+                      fontWeight: 600,
+                      color: "var(--text-primary, #111)",
+                      marginBottom: "0.4rem",
+                    }}
+                  >
+                    {item.title}
+                  </h4>
+                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted, #777)" }}>
+                    Executed by Vivid Interiors Pune
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          6. STUDIO LOCATION & CONTACT DETAILS (FROM VIVID SITE)
+          ───────────────────────────────────────────────────────────── */}
+      <section className="responsive-section" style={{ background: "var(--bg-card, #f4f2ee)", borderTop: "1px solid var(--border-subtle, rgba(0,0,0,0.06))" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div className="responsive-compact-grid">
+            <div style={{ borderLeft: "3px solid #e8651c", paddingLeft: "1.5rem" }}>
+              <span style={{ fontSize: "0.72rem", letterSpacing: "2px", textTransform: "uppercase", color: "#e8651c", fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>
+                Studio Address
+              </span>
+              <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6, color: "var(--text-primary, #111)" }}>
+                B8, New Meenal Society, Nal Stop Chowk, Karve Road, Erandwane, Pune, Maharashtra 411004.
+              </p>
+            </div>
+
+            <div style={{ borderLeft: "3px solid #e8651c", paddingLeft: "1.5rem" }}>
+              <span style={{ fontSize: "0.72rem", letterSpacing: "2px", textTransform: "uppercase", color: "#e8651c", fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>
+                Direct Contact
+              </span>
+              <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6, color: "var(--text-primary, #111)" }}>
+                <a href="tel:+919970180947" style={{ color: "inherit", textDecoration: "none" }}>+91 99701 80947</a><br />
+                <a href="tel:+918999923438" style={{ color: "inherit", textDecoration: "none" }}>+91 89999 23438</a>
+              </p>
+            </div>
+
+            <div style={{ borderLeft: "3px solid #e8651c", paddingLeft: "1.5rem" }}>
+              <span style={{ fontSize: "0.72rem", letterSpacing: "2px", textTransform: "uppercase", color: "#e8651c", fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>
+                Design Inquiries
+              </span>
+              <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6, color: "var(--text-primary, #111)" }}>
+                <a href="mailto:design@vividinteriorspune.com" style={{ color: "inherit", textDecoration: "none" }}>
+                  design@vividinteriorspune.com
+                </a>
+              </p>
+            </div>
+
+            <div style={{ borderLeft: "3px solid #e8651c", paddingLeft: "1.5rem" }}>
+              <span style={{ fontSize: "0.72rem", letterSpacing: "2px", textTransform: "uppercase", color: "#e8651c", fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>
+                Office Hours
+              </span>
+              <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6, color: "var(--text-primary, #111)" }}>
+                Monday – Saturday: 10:00 AM – 7:30 PM<br />
+                Sunday: By Prior Appointment
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          7. VERCEL FINAL CTA SECTION
+          Matching layout & aesthetics, updated with Request a Call & Contact
+          ───────────────────────────────────────────────────────────── */}
+      <section
+        style={{
+          background: "#0d0d0d",
+          padding: "7.5rem 8%",
+          textAlign: "center",
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
         <div
           style={{
             position: "absolute",
-            bottom: "18px",
-            left: "2%",
-            right: "2%",
-            height: "1px",
-            background: "rgba(255,255,255,0.12)",
-            zIndex: 50,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "550px",
+            height: "550px",
+            background:
+              "radial-gradient(circle, rgba(232,101,28,0.15) 0%, transparent 70%)",
             pointerEvents: "none",
           }}
-        >
-          <motion.div
+        />
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <span
             style={{
-              height: "100%",
-              width: "100%",
-              background: "#fff",
-              transformOrigin: "left center",
-              scaleX: progressBarScaleX,
+              fontSize: "0.72rem",
+              letterSpacing: "3px",
+              textTransform: "uppercase",
+              color: "#e8651c",
+              display: "block",
+              marginBottom: "1.5rem",
+              fontWeight: 600,
             }}
-          />
+          >
+            [ Building Relationships, One Conversation at a Time ]
+          </span>
+          <h2
+            className="serif"
+            style={{
+              fontSize: "clamp(2.8rem, 6vw, 6.2rem)",
+              color: "#fff",
+              fontStyle: "italic",
+              fontWeight: 400,
+              lineHeight: 1.08,
+              marginBottom: "2.2rem",
+            }}
+          >
+            Have a Project in Mind?<br />Let&apos;s Talk.
+          </h2>
+          <p
+            style={{
+              color: "#aaa",
+              fontSize: "1.05rem",
+              maxWidth: "580px",
+              margin: "0 auto 2.8rem",
+              lineHeight: 1.8,
+            }}
+          >
+            Do not hesitate to say Hello. Whether an expansive 4 BHK apartment, luxury villa, or commercial workplace — our team is ready to curate your vision.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "1.2rem",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleOpenConsultation}
+              className="forge-shimmer-btn"
+              style={{
+                padding: "1.1rem 2.8rem",
+                cursor: "pointer",
+                border: "none",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                <LetterRoll text="REQUEST A CALL" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+            <Link
+              className="btn-ghost"
+              style={{ padding: "1.1rem 2.8rem" }}
+              href="/contact"
+            >
+              <LetterRoll text="CONTACT US DIRECTLY" />
+            </Link>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

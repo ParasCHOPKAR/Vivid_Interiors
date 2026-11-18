@@ -77,8 +77,8 @@ export default function CustomCursor() {
           zIndex: 9999,
           borderRadius: "50%",
           border: isHovered
-            ? "1px solid rgba(232, 101, 28, 0.7)"
-            : "1px solid rgba(255, 255, 255, 0.35)",
+            ? "1px solid rgba(232, 101, 28, 0.75)"
+            : "1px solid var(--cursor-border, rgba(255, 255, 255, 0.35))",
           background: isHovered
             ? "radial-gradient(circle, rgba(232, 101, 28, 0.18) 0%, transparent 70%)"
             : "transparent",
@@ -103,7 +103,7 @@ export default function CustomCursor() {
           width: isHovered ? "6px" : "4px",
           height: isHovered ? "6px" : "4px",
           borderRadius: "50%",
-          backgroundColor: isHovered ? "#e8651c" : "#fff",
+          backgroundColor: isHovered ? "#e8651c" : "var(--cursor-dot, #ffffff)",
           transition: "width 0.2s ease, height 0.2s ease, background-color 0.2s ease",
         }}
       />

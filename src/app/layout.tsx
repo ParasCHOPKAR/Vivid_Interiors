@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import FloatingActions from "./FloatingActions";
 import CustomCursor from "@/components/CustomCursor";
 import NoiseOverlay from "@/components/NoiseOverlay";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -25,14 +26,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Anti-FOUC Theme Initializer Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = localStorage.getItem('vivid-theme');
+                  var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                  document.documentElement.setAttribute('data-theme', theme);
+                  document.documentElement.style.colorScheme = theme;
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${inter.variable} ${playfair.variable} ${scriptFont.variable}`}>
-        <CustomCursor />
-        <NoiseOverlay />
-        <Header />
-        {children}
-        <Footer />
-        <FloatingActions />
+        <ThemeProvider>
+          <CustomCursor />
+          <NoiseOverlay />
+          <Header />
+          {children}
+          <Footer />
+          <FloatingActions />
+        </ThemeProvider>
       </body>
     </html>
   );

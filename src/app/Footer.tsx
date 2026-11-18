@@ -5,7 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Phone, Mail, MapPin } from "lucide-react";
+import { InstagramIcon, FacebookIcon, YoutubeIcon, WhatsAppIcon } from "@/components/SocialIcons";
 import { ForgeButton, LetterRoll } from "@/components/SharedUI";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Footer() {
   const [currentYear, setCurrentYear] = useState<number | string>("2026");
@@ -73,20 +75,57 @@ export default function Footer() {
               <Image src="/images/logo.png" alt="Vivid Interiors" width={160} height={60} style={{ objectFit: "contain" }} />
             </Link>
             <p style={{ color: "#777", fontSize: "0.88rem", lineHeight: 1.9, maxWidth: "300px", marginBottom: "2rem" }}>
-              Transforming spaces into timeless experiences. Architecture, bespoke interiors, and end-to-end turnkey execution under one roof.
+              Architectural, interior, and contracting company located in Pune since 2018. Driven by design excellence, service efficiency, and end-to-end turnkey execution.
             </p>
-            <div style={{ display: "flex", gap: "0.8rem" }}>
-              {["IN", "BE", "LN", "FB"].map((s, i) => (
-                <motion.a
-                  key={i}
-                  href="#"
-                  whileHover={{ y: -3, borderColor: "#e8651c", color: "#e8651c" }}
-                  transition={{ duration: 0.2 }}
-                  style={{ width: "36px", height: "36px", border: "1px solid rgba(255,255,255,0.15)", color: "#777", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", letterSpacing: "0.5px", transition: "all 0.3s" }}
-                >
-                  {s}
-                </motion.a>
-              ))}
+            <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+              <motion.a
+                href="https://www.instagram.com/vivid_interiors_developers/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Follow Vivid Interiors on Instagram"
+                aria-label="Instagram"
+                whileHover={{ y: -3, borderColor: "#e8651c", color: "#e8651c" }}
+                transition={{ duration: 0.2 }}
+                style={{ width: "38px", height: "38px", borderRadius: "4px", border: "1px solid rgba(255,255,255,0.18)", color: "#aaa", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s" }}
+              >
+                <InstagramIcon size={17} />
+              </motion.a>
+              <motion.a
+                href="https://www.facebook.com/vividinteriorspune/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Follow Vivid Interiors on Facebook"
+                aria-label="Facebook"
+                whileHover={{ y: -3, borderColor: "#e8651c", color: "#e8651c" }}
+                transition={{ duration: 0.2 }}
+                style={{ width: "38px", height: "38px", borderRadius: "4px", border: "1px solid rgba(255,255,255,0.18)", color: "#aaa", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s" }}
+              >
+                <FacebookIcon size={17} />
+              </motion.a>
+              <motion.a
+                href="https://www.youtube.com/channel/UCeGNUunmmJuyLsbioeN31-g"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Subscribe to Vivid Interiors on YouTube"
+                aria-label="YouTube"
+                whileHover={{ y: -3, borderColor: "#e8651c", color: "#e8651c" }}
+                transition={{ duration: 0.2 }}
+                style={{ width: "38px", height: "38px", borderRadius: "4px", border: "1px solid rgba(255,255,255,0.18)", color: "#aaa", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s" }}
+              >
+                <YoutubeIcon size={17} />
+              </motion.a>
+              <motion.a
+                href="https://wa.me/919970180947"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Chat with Vivid Interiors on WhatsApp"
+                aria-label="WhatsApp"
+                whileHover={{ y: -3, borderColor: "#25D366", color: "#25D366" }}
+                transition={{ duration: 0.2 }}
+                style={{ width: "38px", height: "38px", borderRadius: "4px", border: "1px solid rgba(255,255,255,0.18)", color: "#aaa", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s" }}
+              >
+                <WhatsAppIcon size={17} />
+              </motion.a>
             </div>
           </motion.div>
 
@@ -106,6 +145,7 @@ export default function Footer() {
                 { label: "About Studio", href: "/about" },
                 { label: "Selected Projects", href: "/projects" },
                 { label: "Design Services", href: "/services" },
+                { label: "How It Works (26 Steps)", href: "/how-it-work" },
                 { label: "Our Studios & Locations", href: "/locations" },
                 { label: "Client Testimonials", href: "/testimonials" },
                 { label: "Design Ideas Journal", href: "/design-ideas" },
@@ -167,15 +207,24 @@ export default function Footer() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: "0.85rem", color: "#777", fontSize: "0.88rem", lineHeight: 1.6 }}>
                 <MapPin size={16} color="#e8651c" style={{ flexShrink: 0, marginTop: "3px" }} />
-                <span>Level 4, Vivid Atelier, Bandra West, Mumbai 400050, India</span>
+                <span>B8, New Meenal Society, Nal stop chowk, Karve Road, Erandwane, Pune, Maharashtra 411004.</span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", color: "#777", fontSize: "0.88rem" }}>
-                <Phone size={16} color="#e8651c" style={{ flexShrink: 0 }} />
-                <a href="tel:+919876543210" style={{ color: "#aaa" }}>+91 98765 43210</a>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "0.85rem", color: "#777", fontSize: "0.88rem" }}>
+                <Phone size={16} color="#e8651c" style={{ flexShrink: 0, marginTop: "2px" }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <a href="tel:+919970180947" style={{ color: "#aaa", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#e8651c")} onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}>
+                    +91 99701 80947
+                  </a>
+                  <a href="tel:+918999923438" style={{ color: "#aaa", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#e8651c")} onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}>
+                    +91 89999 23438
+                  </a>
+                </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", color: "#777", fontSize: "0.88rem" }}>
                 <Mail size={16} color="#e8651c" style={{ flexShrink: 0 }} />
-                <a href="mailto:hello@vividinteriors.in" style={{ color: "#aaa" }}>hello@vividinteriors.in</a>
+                <a href="mailto:design@vividinteriorspune.com" style={{ color: "#aaa", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#e8651c")} onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}>
+                  design@vividinteriorspune.com
+                </a>
               </div>
               <div style={{ marginTop: "1rem" }}>
                 <span style={{ fontSize: "0.7rem", letterSpacing: "1.5px", textTransform: "uppercase", color: "#555", display: "block", marginBottom: "0.5rem" }}>
@@ -229,35 +278,38 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <button
-            onClick={scrollToTop}
-            style={{
-              background: "none",
-              border: "1px solid rgba(255,255,255,0.15)",
-              color: "#aaa",
-              padding: "0.55rem 1.3rem",
-              fontSize: "0.7rem",
-              letterSpacing: "1.5px",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              transition: "all 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "#e8651c";
-              e.currentTarget.style.color = "#fff";
-              e.currentTarget.style.background = "#e8651c";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-              e.currentTarget.style.color = "#aaa";
-              e.currentTarget.style.background = "none";
-            }}
-          >
-            <LetterRoll text="BACK TO TOP ↑" />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <ThemeToggle variant="pill" />
+            <button
+              onClick={scrollToTop}
+              style={{
+                background: "none",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "#aaa",
+                padding: "0.55rem 1.3rem",
+                fontSize: "0.7rem",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#e8651c";
+                e.currentTarget.style.color = "#fff";
+                e.currentTarget.style.background = "#e8651c";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                e.currentTarget.style.color = "#aaa";
+                e.currentTarget.style.background = "none";
+              }}
+            >
+              <LetterRoll text="BACK TO TOP ↑" />
+            </button>
+          </div>
         </motion.div>
       </footer>
     </>

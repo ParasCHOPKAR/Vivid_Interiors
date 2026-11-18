@@ -1,719 +1,802 @@
 "use client";
 
+import React, { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { ForgeButton, LetterRoll } from "@/components/SharedUI";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  MotionValue,
+} from "framer-motion";
 
-export default function ForgeScrollHero() {
+/* ─────────────────────────────────────────────────────────────
+   HELPER: Word that blurs & fades OUT in reverse on scroll
+   (Stage 1: "For Those Who Refuse Ordinary")
+   ───────────────────────────────────────────────────────────── */
+function BlurOutWord({
+  word,
+  progress,
+  range,
+}: {
+  word: string;
+  progress: MotionValue<number>;
+  range: [number, number];
+}) {
+  const opacity = useTransform(progress, range, [1, 0]);
+  const blurVal = useTransform(progress, range, [0, 16]);
+  const y = useTransform(progress, range, [0, -8]);
+  const filter = useTransform(blurVal, (v) => `blur(${v}px)`);
+
+  return (
+    <motion.span
+      style={{
+        opacity,
+        filter,
+        y,
+        display: "inline-block",
+        marginRight: "0.28em",
+        willChange: "transform, opacity, filter",
+      }}
+    >
+      {word}
+    </motion.span>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HELPER: Word that unblurs & fades IN sequentially on scroll
+   (Stage 2: "We Don't Modify Spaces ... We Build Them For You")
+   ───────────────────────────────────────────────────────────── */
+function BlurInWord({
+  word,
+  progress,
+  inRange,
+}: {
+  word: string;
+  progress: MotionValue<number>;
+  inRange: [number, number];
+}) {
+  const opacity = useTransform(progress, inRange, [0, 1]);
+  const blurVal = useTransform(progress, inRange, [16, 0]);
+  const y = useTransform(progress, inRange, [12, 0]);
+  const filter = useTransform(blurVal, (v) => `blur(${v}px)`);
+
+  return (
+    <motion.span
+      style={{
+        opacity,
+        filter,
+        y,
+        display: "inline-block",
+        marginRight: "0.28em",
+        willChange: "transform, opacity, filter",
+      }}
+    >
+      {word}
+    </motion.span>
+  );
+}
+
+export interface ForgeScrollHeroProps {
+  subtitle?: string;
+  stage2Line1?: string[];
+  stage2Line2?: string[];
+  leftImage?: string;
+  centerImage?: string;
+  rightImage?: string;
+  interiorImage?: string;
+  portalImage?: string;
+  marqueeBrands?: string[];
+  ctaHref?: string;
+  ctaText?: string;
+}
+
+export default function ForgeScrollHero({
+  subtitle = "A luxury architectural atelier for bespoke styling, spatial performance and craftsmanship.",
+  stage2Line1 = ["We", "Don’t", "Modify", "Spaces"],
+  stage2Line2 = ["We", "Build", "Them", "For", "You"],
+  leftImage = "/images/about_studio.jpg",
+  centerImage = "/images/project_villa.jpg",
+  rightImage = "/images/service_commercial.jpg",
+  interiorImage = "/images/design_ideas.jpg",
+  portalImage = "/images/locations_studio.jpg",
+  marqueeBrands = [
+    "MINOTTI",
+    "POLIFORM",
+    "BOFFI",
+    "FLOS",
+    "BAXTER",
+    "RIMADESIO",
+    "GAGGENAU",
+  ],
+  ctaHref = "/contact",
+  ctaText = "START YOUR PROJECT",
+}: ForgeScrollHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Track scroll position through the tall pinned section
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  // Buttery-smooth spring interpolation (Forge-style physics)
-  const smooth = useSpring(scrollYProgress, {
+  // Smooth spring scrub so wheel/trackpad scrolling feels cinematic
+  const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 90,
-    damping: 24,
-    mass: 0.6,
+    damping: 26,
     restDelta: 0.0005,
   });
 
-  // ═══════════════ PHASE 1: HERO TRIO & INITIAL TITLE ═══════════════
-  // Hero headline & subtitle fades out and slides up as scroll begins
-  const heroTextOpacity = useTransform(smooth, [0, 0.12, 0.22], [1, 0.8, 0]);
-  const heroTextY = useTransform(smooth, [0, 0.22], [0, -70]);
-  const heroTextScale = useTransform(smooth, [0, 0.22], [1, 0.94]);
+  /* ═══════════════════════════════════════════════════════════
+     STAGE 1: THREE SUBJECTS + REVERSE WORD BLUR (0.00 -> 0.38)
+     ═══════════════════════════════════════════════════════════ */
+  // Left subject pushes out to the left & scales up
+  const leftX = useTransform(smoothProgress, [0, 0.28], ["0%", "-145%"]);
+  const leftScale = useTransform(smoothProgress, [0, 0.28], [1, 1.45]);
+  const leftOpacity = useTransform(smoothProgress, [0, 0.22, 0.3], [1, 1, 0]);
 
-  // Red/amber vertical accent bars (matching Forge's signature red pillars)
-  const accentBarsOpacity = useTransform(smooth, [0, 0.14, 0.26], [0.85, 0.5, 0]);
-  const accentBarsScaleY = useTransform(smooth, [0, 0.26], [1, 1.35]);
+  // Right subject pushes out to the right & scales up
+  const rightX = useTransform(smoothProgress, [0, 0.28], ["0%", "145%"]);
+  const rightScale = useTransform(smoothProgress, [0, 0.28], [1, 1.45]);
+  const rightOpacity = useTransform(smoothProgress, [0, 0.22, 0.3], [1, 1, 0]);
 
-  // Left & right images slide outward and fade away
-  const leftImageX = useTransform(smooth, [0, 0.12, 0.32], ["0%", "-10%", "-40%"]);
-  const leftImageOpacity = useTransform(smooth, [0, 0.14, 0.28], [0.85, 0.6, 0]);
-
-  const rightImageX = useTransform(smooth, [0, 0.12, 0.32], ["0%", "10%", "40%"]);
-  const rightImageOpacity = useTransform(smooth, [0, 0.14, 0.28], [0.85, 0.6, 0]);
-
-  // ═══════════════ PHASE 2: CENTER IMAGE ZOOMS IN ═══════════════
-  // Center image scales up dramatically (from 1x to 2.75x cockpit/detail zoom)
-  const centerScale = useTransform(smooth, [0, 0.12, 0.38, 0.52], [1, 1.2, 2.75, 2.9]);
-  const centerDarkness = useTransform(smooth, [0.18, 0.36, 0.55], [0, 0.65, 0.88]);
-
-  // ═══════════════ PHASE 3: MANIFESTO HEADLINE REVEAL ═══════════════
-  // "We Don't Just Design Spaces / We Sculpt Them For You"
-  const manifestoOpacity = useTransform(smooth, [0.32, 0.42, 0.54, 0.66], [0, 1, 1, 0]);
-  const manifestoY = useTransform(smooth, [0.32, 0.42, 0.54, 0.66], [40, 0, 0, -35]);
-  const manifestoBlur = useTransform(
-    smooth,
-    [0.32, 0.42, 0.54, 0.66],
-    ["blur(10px)", "blur(0px)", "blur(0px)", "blur(8px)"]
+  // Center subject scales massively so camera zooms through its frame
+  const centerScale = useTransform(
+    smoothProgress,
+    [0, 0.2, 0.38, 0.46],
+    [1, 1.65, 3.8, 5.2]
   );
-  const manifestoScale = useTransform(smooth, [0.32, 0.42, 0.54, 0.66], [0.96, 1, 1, 1.05]);
-
-  // ═══════════════ PHASE 4 & 5: CRAFT MACRO APERTURE & EXPANSION ═══════════════
-  // Macro craftsmanship image reveals in center aperture, then expands
-  const apertureOpacity = useTransform(smooth, [0.52, 0.60, 0.72], [0, 1, 1]);
-  const apertureWidth = useTransform(smooth, [0.54, 0.66, 0.86], ["18vw", "36vw", "82vw"]);
-  const apertureHeight = useTransform(smooth, [0.54, 0.66, 0.86], ["14vh", "28vh", "60vh"]);
-  const apertureScale = useTransform(smooth, [0.54, 0.64, 0.86], [0.85, 1, 1]);
-  const apertureBorder = useTransform(
-    smooth,
-    [0.54, 0.66, 0.86],
-    ["rgba(232, 101, 28, 0.8)", "rgba(232, 101, 28, 0.4)", "rgba(255, 255, 255, 0.12)"]
+  const centerY = useTransform(
+    smoothProgress,
+    [0, 0.2, 0.42],
+    ["0%", "6%", "18%"]
+  );
+  const centerOpacity = useTransform(
+    smoothProgress,
+    [0, 0.34, 0.44],
+    [1, 1, 0]
   );
 
-  // ═══════════════ PHASE 5: ATELIER APPROACH CONTENT ═══════════════
-  // Approach headline, accolades, copy, and Forge shimmer CTA
-  const approachOpacity = useTransform(smooth, [0.72, 0.84, 1], [0, 1, 1]);
-  const approachY = useTransform(smooth, [0.72, 0.84, 1], [40, 0, 0]);
+  // Stage 1 Subtitle at bottom
+  const subtitleOpacity = useTransform(smoothProgress, [0, 0.14], [1, 0]);
+  const subtitleY = useTransform(smoothProgress, [0, 0.14], [0, 20]);
+  const subtitleBlur = useTransform(smoothProgress, [0, 0.14], [0, 8]);
+  const subtitleFilter = useTransform(subtitleBlur, (v) => `blur(${v}px)`);
 
-  // Scroll cue helper (fades out right as user starts scrolling)
-  const scrollCueOpacity = useTransform(smooth, [0, 0.08], [1, 0]);
+  // Floor glow
+  const floorOpacity = useTransform(smoothProgress, [0, 0.25, 0.38], [1, 0.6, 0]);
+
+  /* ═══════════════════════════════════════════════════════════
+     STAGE 2: INTERIOR + WORD-BY-WORD BLUR REVEAL (0.28 -> 0.68)
+     ═══════════════════════════════════════════════════════════ */
+  const interiorOpacity = useTransform(
+    smoothProgress,
+    [0.28, 0.4, 0.56, 0.68],
+    [0, 0.85, 0.55, 0.18]
+  );
+  const interiorScale = useTransform(
+    smoothProgress,
+    [0.28, 0.65],
+    [1.18, 1.0]
+  );
+
+  // Stage 2 text container fades & blurs as Stage 3 portal enters
+  const stage2ContainerOpacity = useTransform(
+    smoothProgress,
+    [0.32, 0.36, 0.6, 0.78, 0.86],
+    [0, 1, 1, 0.38, 0]
+  );
+  const stage2ContainerBlur = useTransform(
+    smoothProgress,
+    [0.56, 0.68, 0.82],
+    [0, 8, 16]
+  );
+  const stage2ContainerFilter = useTransform(
+    stage2ContainerBlur,
+    (v) => `blur(${v}px)`
+  );
+  const stage2ContainerScale = useTransform(
+    smoothProgress,
+    [0.56, 0.82],
+    [1, 0.95]
+  );
+
+  /* ═══════════════════════════════════════════════════════════
+     STAGE 3 & 4: EXPANDING CENTER PORTAL (0.57 -> 1.00)
+     ═══════════════════════════════════════════════════════════ */
+  const portalOpacity = useTransform(smoothProgress, [0.57, 0.61], [0, 1]);
+
+  // Clip-path inset: starts center rectangle, expands to full frame
+  const clipInsetY = useTransform(
+    smoothProgress,
+    [0.58, 0.65, 0.84],
+    [46, 34, 0]
+  );
+  const clipInsetX = useTransform(
+    smoothProgress,
+    [0.58, 0.65, 0.84],
+    [42, 34, 0]
+  );
+  const portalClipPath = useTransform(
+    [clipInsetY, clipInsetX],
+    ([y, x]) => `inset(${y}% ${x}% ${y}% ${x}% round 2px)`
+  );
+
+  const portalImgScale = useTransform(
+    smoothProgress,
+    [0.58, 0.95],
+    [1.22, 1.0]
+  );
+
+  const portalDetailsOpacity = useTransform(
+    smoothProgress,
+    [0.72, 0.86],
+    [0, 1]
+  );
+  const portalDetailsY = useTransform(smoothProgress, [0.72, 0.86], [18, 0]);
+
+  // Bottom progress bar width
+  const progressBarScaleX = useTransform(smoothProgress, [0, 1], [0.02, 1]);
+
+  // Stagger calculation for Stage 2 words
+  const totalStage2Words = stage2Line1.length + stage2Line2.length;
+  const getStage2WordRange = (index: number): [number, number] => {
+    const step = (0.54 - 0.35) / totalStage2Words;
+    const start = 0.35 + index * step * 0.85;
+    const end = Math.min(0.54, start + 1.6 * step);
+    return [start, end];
+  };
 
   return (
-    <div
+    <section
       ref={containerRef}
       style={{
         position: "relative",
-        height: "480vh", // Runway for the 5 cinematic scroll stages
-        background: "#070707",
+        height: "520vh",
+        background: "#050505",
+        color: "#fff",
+        userSelect: "none",
       }}
     >
-      {/* ═══════════════ PINNED VIEWPORT CONTAINER ═══════════════ */}
+      {/* ═══════════════ STICKY VIEWPORT ═══════════════ */}
       <div
         style={{
           position: "sticky",
           top: 0,
-          left: 0,
-          width: "100%",
           height: "100vh",
+          width: "100%",
           overflow: "hidden",
-          background: "#070707",
+          background: "#050505",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
           alignItems: "center",
-          color: "#fff",
+          justifyContent: "center",
         }}
       >
-        {/* Subtle noise grain & ambient radial glow */}
+        {/* Architectural carbon/linen texture background */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background:
-              "radial-gradient(ellipse 70% 60% at 50% 45%, rgba(232, 101, 28, 0.07) 0%, rgba(7, 7, 7, 0.95) 75%)",
+            backgroundImage:
+              "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0), radial-gradient(rgba(255,255,255,0.02) 1px, transparent 0)",
+            backgroundSize: "32px 32px",
+            backgroundPosition: "0 0, 16px 16px",
+            opacity: 0.7,
             pointerEvents: "none",
-            zIndex: 1,
           }}
         />
 
-        {/* ────────────────── TOP ATELIER SUB-BAR ────────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            top: "5.5rem",
-            left: 0,
-            right: 0,
-            padding: "0 5%",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            zIndex: 30,
-            pointerEvents: "auto",
-          }}
-        >
-          {/* Social connections */}
-          <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                display: "inline-flex",
-                alignItems: "center",
-                transition: "color 0.2s ease",
-              }}
-              aria-label="LinkedIn"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-                <rect x="2" y="9" width="4" height="12"/>
-                <circle cx="4" cy="4" r="2"/>
-              </svg>
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                display: "inline-flex",
-                alignItems: "center",
-                transition: "color 0.2s ease",
-              }}
-              aria-label="Instagram"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-              </svg>
-            </a>
-            <span
-              style={{
-                fontSize: "0.68rem",
-                letterSpacing: "2.5px",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.4)",
-                marginLeft: "0.5rem",
-              }}
-            >
-              ATELIER ARCHIVE
-            </span>
-          </div>
-
-          {/* Center monogram indicator */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.6rem",
-              fontSize: "0.68rem",
-              letterSpacing: "3px",
-              textTransform: "uppercase",
-              color: "#e8651c",
-            }}
-          >
-            <span
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                background: "#e8651c",
-                boxShadow: "0 0 10px #e8651c",
-              }}
-            />
-            VIVID INTERIORS ATELIER
-          </div>
-
-          {/* Right status */}
-          <div
-            style={{
-              fontSize: "0.68rem",
-              letterSpacing: "2.5px",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.45)",
-            }}
-          >
-            MUMBAI · BENGALURU · NCR
-          </div>
-        </div>
-
-        {/* ────────────────── VERTICAL ARCHITECTURAL ACCENT BARS ────────────────── */}
-        {/* Matching Forge's iconic deep red/amber geometric accent bars */}
+        {/* ─────────────────────────────────────────────────────────
+           STAGE 1: STUDIO FLOOR + HEADLINE 1 + THREE SUBJECTS
+           ───────────────────────────────────────────────────────── */}
         <motion.div
           style={{
             position: "absolute",
             inset: 0,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "clamp(30px, 8vw, 120px)",
-            opacity: accentBarsOpacity,
-            scaleY: accentBarsScaleY,
+            opacity: floorOpacity,
+            background:
+              "radial-gradient(ellipse 85% 32% at 50% 88%, rgba(255,255,255,0.09) 0%, rgba(20,20,20,0.4) 45%, rgba(5,5,5,1) 80%)",
             pointerEvents: "none",
-            zIndex: 4,
           }}
-        >
-          <div
-            style={{
-              width: "16px",
-              height: "44vh",
-              background: "linear-gradient(180deg, rgba(232, 101, 28, 0.4), rgba(120, 30, 5, 0.7))",
-              filter: "blur(1px)",
-              transform: "translateY(-40px)",
-            }}
-          />
-          <div
-            style={{
-              width: "20px",
-              height: "56vh",
-              background: "linear-gradient(180deg, rgba(232, 101, 28, 0.45), rgba(160, 40, 10, 0.8))",
-              filter: "blur(0.5px)",
-              transform: "translateY(20px)",
-            }}
-          />
-          <div
-            style={{
-              width: "18px",
-              height: "50vh",
-              background: "linear-gradient(180deg, rgba(232, 101, 28, 0.4), rgba(130, 35, 8, 0.75))",
-              filter: "blur(1px)",
-              transform: "translateY(-20px)",
-            }}
-          />
-          <div
-            style={{
-              width: "14px",
-              height: "40vh",
-              background: "linear-gradient(180deg, rgba(232, 101, 28, 0.35), rgba(110, 25, 5, 0.65))",
-              filter: "blur(1.5px)",
-              transform: "translateY(35px)",
-            }}
-          />
-        </motion.div>
+        />
 
-        {/* ────────────────── TRIO BACKGROUND SHOWCASE ────────────────── */}
+        {/* Stage 1 Headline: "For Those Who / Refuse Ordinary" */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2,
+            top: "14%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            textAlign: "center",
+            zIndex: 10,
+            width: "90%",
+            maxWidth: "900px",
+            pointerEvents: "none",
           }}
         >
-          {/* LEFT SUBJECT (Monochrome/Darkened Penthouse) */}
+          <h1
+            className="serif"
+            style={{
+              fontSize: "clamp(2.8rem, 5.6vw, 5.4rem)",
+              fontWeight: 400,
+              lineHeight: 1.06,
+              letterSpacing: "-0.02em",
+              color: "#fff",
+              margin: 0,
+            }}
+          >
+            <span style={{ display: "block" }}>
+              <BlurOutWord
+                word="For"
+                progress={smoothProgress}
+                range={[0.18, 0.28]}
+              />
+              <BlurOutWord
+                word="Those"
+                progress={smoothProgress}
+                range={[0.15, 0.25]}
+              />
+              <BlurOutWord
+                word="Who"
+                progress={smoothProgress}
+                range={[0.11, 0.22]}
+              />
+            </span>
+            <span style={{ display: "block" }}>
+              <BlurOutWord
+                word="Refuse"
+                progress={smoothProgress}
+                range={[0.07, 0.18]}
+              />
+              <BlurOutWord
+                word="Ordinary"
+                progress={smoothProgress}
+                range={[0.02, 0.13]}
+              />
+            </span>
+          </h1>
+        </div>
+
+        {/* Stage 1 Three-Subject Lineup */}
+        <div
+          className="forge-stage1-subjects"
+          style={{
+            position: "relative",
+            width: "100%",
+            maxWidth: "1440px",
+            height: "100%",
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "center",
+            padding: "0 4% 8%",
+            zIndex: 15,
+            pointerEvents: "none",
+          }}
+        >
+          {/* LEFT SUBJECT */}
           <motion.div
             style={{
-              position: "absolute",
-              left: "4%",
-              width: "clamp(260px, 28vw, 440px)",
-              height: "clamp(240px, 44vh, 480px)",
-              opacity: leftImageOpacity,
-              x: leftImageX,
-              borderRadius: "4px",
+              x: leftX,
+              scale: leftScale,
+              opacity: leftOpacity,
+              width: "28%",
+              aspectRatio: "4 / 3",
+              position: "relative",
+              marginRight: "3%",
+              marginBottom: "1%",
+              borderRadius: "3px",
               overflow: "hidden",
-              filter: "brightness(0.6) contrast(1.15) grayscale(40%)",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.8)",
+              boxShadow: "0 30px 70px rgba(0,0,0,0.85)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              transformOrigin: "right center",
             }}
           >
             <Image
-              src="/images/project_penthouse.jpg"
-              alt="Luxury Penthouse Architecture"
+              src={leftImage}
+              alt="Left Architectural Showcase"
               fill
-              sizes="33vw"
               priority
-              style={{ objectFit: "cover" }}
+              style={{ objectFit: "cover", filter: "contrast(1.08) brightness(0.85)" }}
             />
             <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(to top, rgba(7,7,7,0.85) 0%, transparent 60%)",
-              }}
-            />
-          </motion.div>
-
-          {/* CENTER SUBJECT (The Main Architectural Sanctuary - ZOOMS IN) */}
-          <motion.div
-            style={{
-              position: "relative",
-              width: "clamp(320px, 46vw, 720px)",
-              height: "clamp(280px, 58vh, 600px)",
-              scale: centerScale,
-              transformOrigin: "center center",
-              borderRadius: "4px",
-              overflow: "hidden",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.95)",
-              zIndex: 3,
-            }}
-          >
-            <Image
-              src="/images/project_villa.jpg"
-              alt="Curated Villa Pavilion"
-              fill
-              sizes="80vw"
-              priority
-              style={{ objectFit: "cover" }}
-            />
-
-            {/* Dark vignette overlay for stage 2 & 3 text readability */}
-            <motion.div
               style={{
                 position: "absolute",
                 inset: 0,
                 background:
-                  "radial-gradient(circle at center, rgba(7,7,7,0.3) 0%, rgba(7,7,7,0.92) 100%)",
-                opacity: centerDarkness,
-              }}
-            />
-
-            {/* Subtle red/orange edge glow */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                boxShadow: "inset 0 0 100px rgba(0,0,0,0.85)",
-                pointerEvents: "none",
+                  "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)",
               }}
             />
           </motion.div>
 
-          {/* RIGHT SUBJECT (Master Suite / Bespoke Kitchen) */}
+          {/* CENTER SUBJECT (Zooms into camera with warm border) */}
           <motion.div
             style={{
-              position: "absolute",
-              right: "4%",
-              width: "clamp(260px, 28vw, 440px)",
-              height: "clamp(240px, 44vh, 480px)",
-              opacity: rightImageOpacity,
-              x: rightImageX,
-              borderRadius: "4px",
+              scale: centerScale,
+              y: centerY,
+              opacity: centerOpacity,
+              width: "34%",
+              aspectRatio: "16 / 10",
+              position: "relative",
+              zIndex: 25,
+              borderRadius: "3px",
               overflow: "hidden",
-              filter: "brightness(0.6) contrast(1.15) grayscale(40%)",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.8)",
+              boxShadow: "0 35px 90px rgba(0,0,0,0.95)",
+              border: "1px solid rgba(232,101,28,0.28)",
+              transformOrigin: "center 42%",
             }}
           >
             <Image
-              src="/images/service_bedroom.jpg"
-              alt="Bespoke Master Suite"
+              src={centerImage}
+              alt="Center Flagship Residence"
               fill
-              sizes="33vw"
               priority
-              style={{ objectFit: "cover" }}
+              style={{ objectFit: "cover", filter: "contrast(1.1)" }}
             />
             <div
               style={{
                 position: "absolute",
                 inset: 0,
-                background: "linear-gradient(to top, rgba(7,7,7,0.85) 0%, transparent 60%)",
+                background:
+                  "radial-gradient(circle at 50% 42%, rgba(10,10,10,0.25) 0%, rgba(0,0,0,0.65) 100%)",
+              }}
+            />
+          </motion.div>
+
+          {/* RIGHT SUBJECT */}
+          <motion.div
+            style={{
+              x: rightX,
+              scale: rightScale,
+              opacity: rightOpacity,
+              width: "28%",
+              aspectRatio: "4 / 3",
+              position: "relative",
+              marginLeft: "3%",
+              marginBottom: "1%",
+              borderRadius: "3px",
+              overflow: "hidden",
+              boxShadow: "0 30px 70px rgba(0,0,0,0.85)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              transformOrigin: "left center",
+            }}
+          >
+            <Image
+              src={rightImage}
+              alt="Right Architectural Showcase"
+              fill
+              priority
+              style={{ objectFit: "cover", filter: "contrast(1.08) brightness(0.85)" }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)",
               }}
             />
           </motion.div>
         </div>
 
-        {/* ────────────────── PHASE 1: INITIAL HERO HEADLINE ────────────────── */}
-        <motion.div
+        {/* Stage 1 Bottom Subtitle */}
+        <motion.p
           style={{
+            opacity: subtitleOpacity,
+            y: subtitleY,
+            filter: subtitleFilter,
             position: "absolute",
-            zIndex: 10,
+            bottom: "5.5%",
+            left: "50%",
+            transform: "translateX(-50%)",
             textAlign: "center",
-            opacity: heroTextOpacity,
-            y: heroTextY,
-            scale: heroTextScale,
-            padding: "0 2rem",
-            maxWidth: "960px",
+            maxWidth: "420px",
+            fontSize: "0.92rem",
+            lineHeight: 1.55,
+            color: "rgba(255,255,255,0.85)",
+            zIndex: 12,
+            margin: 0,
             pointerEvents: "none",
           }}
         >
-          <div
-            style={{
-              fontSize: "0.72rem",
-              letterSpacing: "4px",
-              textTransform: "uppercase",
-              color: "#e8651c",
-              marginBottom: "1rem",
-              fontWeight: 500,
-            }}
-          >
-            [ THE BESPOKE ATELIER ]
-          </div>
+          {subtitle}
+        </motion.p>
 
-          <h1
-            className="serif"
-            style={{
-              fontSize: "clamp(2.8rem, 6.2vw, 5.8rem)",
-              lineHeight: 1.05,
-              fontWeight: 400,
-              letterSpacing: "-0.01em",
-              color: "#ffffff",
-              textShadow: "0 4px 30px rgba(0,0,0,0.9)",
-              marginBottom: "2rem",
-            }}
-          >
-            For Those Who
-            <br />
-            <span style={{ fontStyle: "italic", color: "#faf9f6" }}>Refuse Ordinary</span>
-          </h1>
-
-          <p
-            style={{
-              fontSize: "clamp(0.9rem, 1.25vw, 1.15rem)",
-              lineHeight: 1.7,
-              color: "rgba(255, 255, 255, 0.78)",
-              maxWidth: "600px",
-              margin: "0 auto",
-              letterSpacing: "0.2px",
-              textShadow: "0 2px 10px rgba(0,0,0,0.8)",
-            }}
-          >
-            A luxury architectural atelier for bespoke spatial styling, noble materiality, and turnkey engineering.
-          </p>
-        </motion.div>
-
-        {/* ────────────────── PHASE 3: MANIFESTO HEADLINE REVEAL ────────────────── */}
-        {/* Exactly matching Screenshot 3: "We Don't Modify Vehicles / We Build Them For You" */}
+        {/* ─────────────────────────────────────────────────────────
+           STAGE 2: DARK INTERIOR SANCTUARY + WORD-BY-WORD UNBLUR
+           ───────────────────────────────────────────────────────── */}
         <motion.div
           style={{
             position: "absolute",
-            zIndex: 15,
+            inset: 0,
+            opacity: interiorOpacity,
+            scale: interiorScale,
+            zIndex: 20,
+            pointerEvents: "none",
+          }}
+        >
+          <Image
+            src={interiorImage}
+            alt="Interior Sanctuary Atmosphere"
+            fill
+            style={{
+              objectFit: "cover",
+              filter: "brightness(0.38) contrast(1.15) saturate(0.85)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "radial-gradient(circle at 50% 50%, transparent 20%, #050505 95%)",
+            }}
+          />
+        </motion.div>
+
+        {/* Stage 2 Center Typography */}
+        <motion.div
+          style={{
+            opacity: stage2ContainerOpacity,
+            filter: stage2ContainerFilter,
+            scale: stage2ContainerScale,
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
             textAlign: "center",
-            opacity: manifestoOpacity,
-            y: manifestoY,
-            filter: manifestoBlur,
-            scale: manifestoScale,
-            padding: "0 2rem",
-            maxWidth: "1000px",
+            zIndex: 28,
+            padding: "0 5%",
             pointerEvents: "none",
           }}
         >
           <h2
             className="serif"
             style={{
-              fontSize: "clamp(2.6rem, 5.8vw, 5.4rem)",
-              lineHeight: 1.12,
+              fontSize: "clamp(2.5rem, 5.2vw, 5rem)",
               fontWeight: 400,
-              letterSpacing: "0.01em",
-              color: "rgba(255, 255, 255, 0.94)",
-              textShadow: "0 0 40px rgba(255, 255, 255, 0.2), 0 10px 40px rgba(0,0,0,0.9)",
+              lineHeight: 1.12,
+              letterSpacing: "-0.02em",
+              color: "#fff",
+              margin: 0,
             }}
           >
-            We Don’t Just Design Spaces
-            <br />
-            <span style={{ fontStyle: "italic", color: "#e8651c" }}>We Sculpt Them For You</span>
+            <span style={{ display: "block" }}>
+              {stage2Line1.map((word, idx) => (
+                <BlurInWord
+                  key={`l1-${idx}`}
+                  word={word}
+                  progress={smoothProgress}
+                  inRange={getStage2WordRange(idx)}
+                />
+              ))}
+            </span>
+            <span style={{ display: "block" }}>
+              {stage2Line2.map((word, idx) => (
+                <BlurInWord
+                  key={`l2-${idx}`}
+                  word={word}
+                  progress={smoothProgress}
+                  inRange={getStage2WordRange(stage2Line1.length + idx)}
+                />
+              ))}
+            </span>
           </h2>
-          <p
-            style={{
-              marginTop: "1.5rem",
-              fontSize: "0.88rem",
-              letterSpacing: "3px",
-              textTransform: "uppercase",
-              color: "rgba(255, 255, 255, 0.6)",
-            }}
-          >
-            TURNKEY ARCHITECTURAL CRAFTSMANSHIP
-          </p>
         </motion.div>
 
-        {/* ────────────────── PHASE 4 & 5: CRAFT DETAIL APERTURE ────────────────── */}
-        {/* Matching Screenshot 4 (small center aperture) expanding into Screenshot 5 (full framed focal presentation) */}
+        {/* ─────────────────────────────────────────────────────────
+           STAGE 3 & 4: EXPANDING PORTAL TO ATELIER METHODOLOGY
+           ───────────────────────────────────────────────────────── */}
         <motion.div
+          className="forge-portal-card"
           style={{
-            position: "absolute",
-            zIndex: 20,
-            width: apertureWidth,
-            height: apertureHeight,
-            opacity: apertureOpacity,
-            scale: apertureScale,
-            borderRadius: "6px",
+            opacity: portalOpacity,
+            clipPath: portalClipPath,
+            position: "relative",
+            width: "74vw",
+            height: "72vh",
+            maxWidth: "1280px",
+            zIndex: 35,
             overflow: "hidden",
-            border: "1px solid",
-            borderColor: apertureBorder,
-            boxShadow: "0 25px 80px rgba(0, 0, 0, 0.95), 0 0 35px rgba(232, 101, 28, 0.25)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            background: "#0c0c0c",
+            boxShadow: "0 40px 100px rgba(0,0,0,0.9)",
           }}
         >
-          {/* Second Image: Hand-stitched saddle leather, fluted walnut, brass inlay & marble */}
-          <Image
-            src="/images/craft_macro_detail.jpg"
-            alt="Hand-stitched leather and noble materiality detail"
-            fill
-            sizes="90vw"
-            priority
-            style={{ objectFit: "cover" }}
-          />
-
-          {/* Vignette overlay */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(135deg, rgba(0,0,0,0.45) 0%, transparent 40%, rgba(0,0,0,0.75) 100%)",
-            }}
-          />
-
-          {/* ────────────────── PHASE 5: OVERLAID APPROACH PRESENTATION ────────────────── */}
-          {/* Matching Screenshot 5: "Our Approach To Every Build", brand accolades, narrative & CTA */}
           <motion.div
             style={{
               position: "absolute",
               inset: 0,
-              padding: "clamp(2rem, 5vw, 4rem)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              opacity: approachOpacity,
-              y: approachY,
-              zIndex: 5,
+              scale: portalImgScale,
             }}
           >
-            {/* Top row: Section tag & Architectural guild badges */}
+            <Image
+              src={portalImage}
+              alt="Bespoke Material Craftsmanship"
+              fill
+              style={{
+                objectFit: "cover",
+                filter: "brightness(0.68) contrast(1.12)",
+              }}
+            />
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                flexWrap: "wrap",
-                gap: "1rem",
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.78) 100%)",
+              }}
+            />
+          </motion.div>
+
+          {/* Top-left portal headline */}
+          <div
+            className="forge-portal-headline"
+            style={{
+              position: "absolute",
+              top: "6%",
+              left: "-1.2%",
+              zIndex: 5,
+              pointerEvents: "none",
+            }}
+          >
+            <h2
+              className="serif"
+              style={{
+                fontSize: "clamp(2.6rem, 5.2vw, 5.1rem)",
+                fontWeight: 400,
+                lineHeight: 1.05,
+                letterSpacing: "-0.02em",
+                color: "#fff",
+                margin: 0,
               }}
             >
-              <div>
-                <span
+              <span style={{ display: "block" }}>Our Approach</span>
+              <span style={{ display: "block" }}>To Every Build</span>
+            </h2>
+          </div>
+
+          {/* Bottom-left brand marquee */}
+          <motion.div
+            className="forge-portal-marquee"
+            style={{
+              opacity: portalDetailsOpacity,
+              position: "absolute",
+              bottom: "13%",
+              left: 0,
+              width: "62%",
+              overflow: "hidden",
+              zIndex: 5,
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 0%, black 14%, black 82%, transparent 100%)",
+              maskImage:
+                "linear-gradient(to right, transparent 0%, black 14%, black 82%, transparent 100%)",
+            }}
+          >
+            <motion.div
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 22 }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4rem",
+                width: "max-content",
+              }}
+            >
+              {[...marqueeBrands, ...marqueeBrands].map((brand, i) => (
+                <div
+                  key={i}
                   style={{
-                    fontSize: "0.7rem",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0.4rem 1rem",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: "999px",
+                    fontSize: "0.75rem",
                     letterSpacing: "3px",
                     textTransform: "uppercase",
-                    color: "#e8651c",
-                    display: "block",
-                    marginBottom: "0.4rem",
-                    fontWeight: 600,
+                    color: "rgba(255,255,255,0.85)",
+                    whiteSpace: "nowrap",
+                    background: "rgba(0,0,0,0.25)",
+                    backdropFilter: "blur(4px)",
                   }}
                 >
-                  [ ATELIER METHODOLOGY ]
-                </span>
-                <h3
-                  className="serif"
-                  style={{
-                    fontSize: "clamp(2rem, 3.8vw, 3.6rem)",
-                    lineHeight: 1.1,
-                    fontWeight: 400,
-                    color: "#ffffff",
-                    letterSpacing: "-0.01em",
-                    textShadow: "0 2px 20px rgba(0,0,0,0.9)",
-                  }}
-                >
-                  Our Approach To
-                  <br />
-                  <span style={{ fontStyle: "italic", color: "#e8651c" }}>Every Space</span>
-                </h3>
-              </div>
+                  {brand}
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
 
-              {/* Architectural Guild & Material Certification Marks */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: "1.8rem",
-                  alignItems: "center",
-                  background: "rgba(10, 10, 10, 0.7)",
-                  backdropFilter: "blur(12px)",
-                  padding: "0.8rem 1.6rem",
-                  borderRadius: "4px",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
-              >
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "1.5px", color: "#faf9f6" }}>
-                    IIID
-                  </div>
-                  <div style={{ fontSize: "0.6rem", color: "#888", letterSpacing: "1px" }}>FELLOW</div>
-                </div>
-                <div style={{ width: "1px", height: "24px", background: "rgba(255,255,255,0.15)" }} />
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "1.5px", color: "#faf9f6" }}>
-                    AA LONDON
-                  </div>
-                  <div style={{ fontSize: "0.6rem", color: "#888", letterSpacing: "1px" }}>ALUMNI</div>
-                </div>
-                <div style={{ width: "1px", height: "24px", background: "rgba(255,255,255,0.15)" }} />
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "1.5px", color: "#faf9f6" }}>
-                    ITALIAN STONE
-                  </div>
-                  <div style={{ fontSize: "0.6rem", color: "#888", letterSpacing: "1px" }}>VERIFIED</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom row: Narrative copy & Forge shimmer CTA button */}
-            <div
+          {/* Bottom-right CTA */}
+          <motion.div
+            className="forge-portal-cta"
+            style={{
+              opacity: portalDetailsOpacity,
+              y: portalDetailsY,
+              position: "absolute",
+              bottom: "8%",
+              right: "4%",
+              maxWidth: "290px",
+              zIndex: 6,
+            }}
+          >
+            <p
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                flexWrap: "wrap",
-                gap: "2rem",
-                background: "linear-gradient(to top, rgba(7,7,7,0.85) 0%, transparent 100%)",
-                paddingTop: "2rem",
+                fontSize: "0.88rem",
+                lineHeight: 1.6,
+                color: "rgba(255,255,255,0.82)",
+                marginBottom: "1.4rem",
               }}
             >
-              <p
-                style={{
-                  maxWidth: "520px",
-                  fontSize: "clamp(0.88rem, 1.1vw, 1.05rem)",
-                  lineHeight: 1.7,
-                  color: "rgba(255, 255, 255, 0.85)",
-                  textShadow: "0 2px 10px rgba(0,0,0,0.9)",
-                }}
-              >
-                Every decision is intentional. Every detail has purpose, bespoke to your lifestyle, proportions, and
-                architectural legacy.
-              </p>
+              Every decision is intentional, every detail has purpose based on
+              you, your lifestyle, and your standards.
+            </p>
 
-              <div>
-                <ForgeButton href="/contact" variant="shimmer">
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem" }}>
-                    <LetterRoll text="START YOUR PROJECT" />
-                    <ArrowUpRight size={15} />
-                  </span>
-                </ForgeButton>
-              </div>
-            </div>
+            <Link
+              href={ctaHref}
+              style={{
+                position: "relative",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                padding: "1rem 1.8rem",
+                background: "rgba(10, 10, 10, 0.72)",
+                backdropFilter: "blur(8px)",
+                border: "1px solid rgba(255, 255, 255, 0.16)",
+                color: "#fff",
+                fontSize: "0.7rem",
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                overflow: "hidden",
+                transition: "border-color 0.3s ease, background 0.3s ease",
+              }}
+            >
+              <span>{ctaText}</span>
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: "20%",
+                  right: "20%",
+                  height: "1px",
+                  background:
+                    "radial-gradient(circle, rgba(255,255,255,0.9) 0%, transparent 100%)",
+                }}
+              />
+            </Link>
           </motion.div>
         </motion.div>
 
-        {/* ────────────────── BOTTOM PERSISTENT SCROLL PROGRESS BAR ────────────────── */}
+        {/* ─────────────────────────────────────────────────────────
+           BOTTOM SCROLL PROGRESS INDICATOR LINE
+           ───────────────────────────────────────────────────────── */}
         <div
           style={{
             position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "2px",
-            background: "rgba(255, 255, 255, 0.08)",
-            zIndex: 35,
+            bottom: "18px",
+            left: "2%",
+            right: "2%",
+            height: "1px",
+            background: "rgba(255,255,255,0.12)",
+            zIndex: 50,
+            pointerEvents: "none",
           }}
         >
           <motion.div
             style={{
               height: "100%",
-              background: "linear-gradient(90deg, #e8651c, #ff8c42)",
-              scaleX: smooth,
-              transformOrigin: "left",
+              width: "100%",
+              background: "#fff",
+              transformOrigin: "left center",
+              scaleX: progressBarScaleX,
             }}
           />
         </div>
-
-        {/* Bottom subtle scroll helper cue */}
-        <motion.div
-          style={{
-            position: "absolute",
-            bottom: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.8rem",
-            fontSize: "0.68rem",
-            letterSpacing: "3px",
-            textTransform: "uppercase",
-            color: "rgba(255, 255, 255, 0.45)",
-            zIndex: 30,
-            opacity: scrollCueOpacity,
-            pointerEvents: "none",
-          }}
-        >
-          <span>SCROLL TO EXPLORE SEQUENCE</span>
-          <motion.span
-            animate={{ y: [0, 4, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            style={{ display: "inline-block", color: "#e8651c" }}
-          >
-            ↓
-          </motion.span>
-        </motion.div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Mail, MapPin, Clock, MessageCircle, Send, CheckCircle2, ChevronDown, ArrowRight } from "lucide-react";
 import { PageHero, Reveal, MarqueeTicker, LetterRoll } from "@/components/SharedUI";
+import GoogleMapEmbed from "@/components/GoogleMapEmbed";
+import { InstagramIcon, FacebookIcon, YoutubeIcon, WhatsAppIcon } from "@/components/SocialIcons";
 
 const contactFaqs = [
   {
@@ -64,8 +66,8 @@ export default function ContactPage() {
       <MarqueeTicker text="Direct Senior Architect Consultation ✦ Guaranteed Fixed Pricing ✦ In-Studio Material Review ✦ Nationwide Presence ✦" />
 
       {/* ═══════════════ INQUIRY FORM & STUDIO CONTACT ═══════════════ */}
-      <section id="inquiry-form" style={{ padding: "8rem 8%", background: "#0d0d0d", color: "#fff" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "6rem", alignItems: "start" }}>
+      <section id="inquiry-form" className="responsive-section" style={{ background: "#0d0d0d", color: "#fff" }}>
+        <div className="responsive-two-col site-max-width" style={{ alignItems: "start" }}>
           {/* Form Side */}
           <div>
             <Reveal direction="left">
@@ -110,7 +112,7 @@ export default function ContactPage() {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.8rem" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                <div className="responsive-form-grid">
                   <div>
                     <label style={{ fontSize: "0.72rem", letterSpacing: "1.5px", textTransform: "uppercase", color: "#888", display: "block", marginBottom: "0.6rem" }}>
                       Your Full Name *
@@ -140,7 +142,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                <div className="responsive-form-grid">
                   <div>
                     <label style={{ fontSize: "0.72rem", letterSpacing: "1.5px", textTransform: "uppercase", color: "#888", display: "block", marginBottom: "0.6rem" }}>
                       Phone / WhatsApp Number *
@@ -175,7 +177,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                <div className="responsive-form-grid">
                   <div>
                     <label style={{ fontSize: "0.72rem", letterSpacing: "1.5px", textTransform: "uppercase", color: "#888", display: "block", marginBottom: "0.6rem" }}>
                       Property Scope *
@@ -214,7 +216,7 @@ export default function ContactPage() {
                   <label style={{ fontSize: "0.72rem", letterSpacing: "1.5px", textTransform: "uppercase", color: "#888", display: "block", marginBottom: "0.6rem" }}>
                     Preferred Consultation Mode
                   </label>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+                  <div className="responsive-grid-3">
                     {["In-Person Studio Visit", "Virtual 4K Video Call", "On-Site Assessment"].map((m) => (
                       <button
                         type="button"
@@ -280,8 +282,9 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <span style={{ fontSize: "0.72rem", color: "#777", letterSpacing: "1.5px", textTransform: "uppercase", display: "block", marginBottom: "0.3rem" }}>General Inquiries</span>
-                      <a href="tel:+919876543210" style={{ color: "#fff", fontSize: "1.1rem", fontWeight: 500 }}>+91 98765 43210</a>
-                      <p style={{ color: "#777", fontSize: "0.8rem", marginTop: "0.2rem" }}>Available Mon – Sat, 10:00 AM – 7:30 PM</p>
+                      <a href="tel:+919970180947" style={{ color: "#fff", fontSize: "1.05rem", fontWeight: 500, display: "block" }}>+91 99701 80947</a>
+                      <a href="tel:+918999923438" style={{ color: "#fff", fontSize: "1.05rem", fontWeight: 500, display: "block", marginTop: "0.2rem" }}>+91 89999 23438</a>
+                      <p style={{ color: "#777", fontSize: "0.8rem", marginTop: "0.3rem" }}>Available Mon – Sat, 10:00 AM – 7:30 PM</p>
                     </div>
                   </div>
 
@@ -291,7 +294,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <span style={{ fontSize: "0.72rem", color: "#777", letterSpacing: "1.5px", textTransform: "uppercase", display: "block", marginBottom: "0.3rem" }}>Instant WhatsApp Concierge</span>
-                      <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" style={{ color: "#25D366", fontSize: "1.05rem", fontWeight: 500 }}>
+                      <a href="https://wa.me/919970180947" target="_blank" rel="noopener noreferrer" style={{ color: "#25D366", fontSize: "1.05rem", fontWeight: 500 }}>
                         Chat with Design Concierge &nbsp;↗
                       </a>
                       <p style={{ color: "#777", fontSize: "0.8rem", marginTop: "0.2rem" }}>Average response within 15 minutes</p>
@@ -304,7 +307,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <span style={{ fontSize: "0.72rem", color: "#777", letterSpacing: "1.5px", textTransform: "uppercase", display: "block", marginBottom: "0.3rem" }}>Architectural Proposals</span>
-                      <a href="mailto:hello@vividinteriors.in" style={{ color: "#fff", fontSize: "1.05rem" }}>hello@vividinteriors.in</a>
+                      <a href="mailto:design@vividinteriorspune.com" style={{ color: "#fff", fontSize: "1.05rem" }}>design@vividinteriorspune.com</a>
                       <p style={{ color: "#777", fontSize: "0.8rem", marginTop: "0.2rem" }}>Send architectural plans / drawings directly</p>
                     </div>
                   </div>
@@ -315,7 +318,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <span style={{ fontSize: "0.72rem", color: "#777", letterSpacing: "1.5px", textTransform: "uppercase", display: "block", marginBottom: "0.3rem" }}>Flagship Headquarters</span>
-                      <p style={{ color: "#ddd", fontSize: "0.92rem", lineHeight: 1.6 }}>Level 4, Vivid Atelier, Bandra West, Mumbai 400050, India</p>
+                      <p style={{ color: "#ddd", fontSize: "0.92rem", lineHeight: 1.6 }}>B8, New Meenal Society, Nal stop chowk, Karve Road, Erandwane, Pune, Maharashtra 411004.</p>
                     </div>
                   </div>
                 </div>
@@ -342,9 +345,144 @@ export default function ContactPage() {
                 </div>
               </div>
             </Reveal>
+
+            {/* Official Social Media Card */}
+            <Reveal direction="right" delay={0.25}>
+              <div style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.08)", padding: "2.5rem", borderRadius: "4px" }}>
+                <span style={{ fontSize: "0.72rem", letterSpacing: "2.5px", textTransform: "uppercase", color: "#e8651c", display: "block", marginBottom: "1rem" }}>
+                  Connect on Social Media
+                </span>
+                <p style={{ color: "#888", fontSize: "0.85rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                  Explore daily on-site carpentry, design ideation, and completed homes across Pune.
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
+                  <a
+                    href="https://www.instagram.com/vivid_interiors_developers/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      color: "#fff",
+                      textDecoration: "none",
+                      fontSize: "0.78rem",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#e8651c";
+                      e.currentTarget.style.color = "#e8651c";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                      e.currentTarget.style.color = "#fff";
+                    }}
+                  >
+                    <InstagramIcon size={16} color="#e8651c" />
+                    <span>Instagram</span>
+                  </a>
+
+                  <a
+                    href="https://www.facebook.com/vividinteriorspune/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      color: "#fff",
+                      textDecoration: "none",
+                      fontSize: "0.78rem",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#1877F2";
+                      e.currentTarget.style.color = "#1877F2";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                      e.currentTarget.style.color = "#fff";
+                    }}
+                  >
+                    <FacebookIcon size={16} color="#1877F2" />
+                    <span>Facebook</span>
+                  </a>
+
+                  <a
+                    href="https://www.youtube.com/channel/UCeGNUunmmJuyLsbioeN31-g"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      color: "#fff",
+                      textDecoration: "none",
+                      fontSize: "0.78rem",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#FF0000";
+                      e.currentTarget.style.color = "#FF0000";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                      e.currentTarget.style.color = "#fff";
+                    }}
+                  >
+                    <YoutubeIcon size={16} color="#FF0000" />
+                    <span>YouTube</span>
+                  </a>
+
+                  <a
+                    href="https://wa.me/919970180947"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                      padding: "0.85rem 1rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      color: "#fff",
+                      textDecoration: "none",
+                      fontSize: "0.78rem",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#25D366";
+                      e.currentTarget.style.color = "#25D366";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                      e.currentTarget.style.color = "#fff";
+                    }}
+                  >
+                    <WhatsAppIcon size={16} color="#25D366" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
+
+      {/* ═══════════════ GOOGLE MAP EMBED SECTION ═══════════════ */}
+      <GoogleMapEmbed
+        title="Find Our Pune Studio on the Map"
+        subtitle="Located at Nal Stop Chowk, Karve Road, Erandwane — welcoming clients for architecture, interior, and turnkey contracting consultations."
+      />
 
       {/* ═══════════════ FREQUENTLY ASKED QUESTIONS ═══════════════ */}
       <section style={{ padding: "8rem 8%", background: "#faf9f6" }}>

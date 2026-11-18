@@ -6,6 +6,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, ArrowRight, ArrowUpRight, Compass, Sparkles, Monitor, Coffee } from "lucide-react";
 import { PageHero, Reveal, ParallaxImg, MarqueeTicker, ForgeButton, LetterRoll } from "@/components/SharedUI";
+import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 
 interface Studio {
   id: string;
@@ -77,12 +78,12 @@ const studios: Studio[] = [
   {
     id: "pune",
     city: "Pune",
-    neighborhood: "Koregaon Park",
-    address: "North Main Road, Koregaon Park, Pune 411001",
+    neighborhood: "Erandwane, Karve Road",
+    address: "B8, New Meenal Society, Nal stop chowk, Karve Road, Erandwane, Pune, Maharashtra 411004",
     studioHead: "Tanvi Deshmukh (Design Director)",
-    phone: "+91 98765 43214",
-    email: "pune@vividinteriors.in",
-    hours: "Mon – Sat: 10:00 AM – 7:00 PM",
+    phone: "+91 99701 80947 / +91 89999 23438",
+    email: "design@vividinteriorspune.com",
+    hours: "Mon – Sat: 10:00 AM – 7:30 PM",
     img: "/images/design_ideas.jpg",
     amenities: ["Japandi & Minimalist Mockups", "Modular Wardrobe Systems", "European Veneer Curations", "Private Consultation Pod"],
     area: "3,600 sq ft Atelier",
@@ -148,13 +149,11 @@ export default function LocationsPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="responsive-two-col"
           style={{
             background: "#fff",
             border: "1px solid rgba(0,0,0,0.08)",
-            display: "grid",
-            gridTemplateColumns: "1.2fr 1fr",
-            gap: "4rem",
-            padding: "3.5rem",
+            padding: "clamp(1.5rem, 4vw, 3.5rem)",
             boxShadow: "0 25px 60px -20px rgba(0,0,0,0.08)",
             borderRadius: "4px",
             alignItems: "center",
@@ -284,8 +283,8 @@ export default function LocationsPage() {
       </section>
 
       {/* ═══════════════ NRI & REMOTE DESIGN SECTION ═══════════════ */}
-      <section style={{ padding: "8rem 8%", background: "#111", color: "#fff" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "center" }}>
+      <section className="responsive-section" style={{ background: "#111", color: "#fff" }}>
+        <div className="responsive-equal-two-col site-max-width">
           <div>
             <Reveal direction="left">
               <span style={{ fontSize: "0.72rem", letterSpacing: "3px", textTransform: "uppercase", color: "#e8651c", display: "block", marginBottom: "1.2rem" }}>
@@ -303,7 +302,7 @@ export default function LocationsPage() {
               <p style={{ lineHeight: 1.9, color: "#888", marginBottom: "2.5rem" }}>
                 We provide complete remote transparency: live 4K site cameras, weekly high-resolution video walkthroughs, digital milestone sign-offs, and VR headset presentations shipped directly to your overseas residence.
               </p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "3rem" }}>
+              <div className="responsive-pillars-grid" style={{ marginBottom: "3rem" }}>
                 {[
                   { title: "Timezone Harmony", desc: "Consultations scheduled to match your local timezone seamlessly." },
                   { title: "Weekly Video Audits", desc: "4K detailed video progress reports every Friday." },
@@ -332,6 +331,12 @@ export default function LocationsPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* ═══════════════ PUNE FLAGSHIP MAP ═══════════════ */}
+      <GoogleMapEmbed
+        title="Find Our Pune Atelier on the Map"
+        subtitle="Visit our Pune Flagship Experience Center at Nal Stop Chowk, Karve Road, Erandwane — sample real materials, inspect joinery finishes, and meet our senior design architects."
+      />
     </main>
   );
 }

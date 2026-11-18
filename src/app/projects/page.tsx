@@ -19,7 +19,7 @@ interface Project {
   id: string;
   title: string;
   location: string;
-  category: "Residential" | "Penthouse" | "Commercial" | "Villa";
+  category: "Residential" | "Bungalow" | "Commercial" | "Villa";
   area: string;
   year: string;
   img: string;
@@ -44,15 +44,15 @@ const allProjects: Project[] = [
     scope: ["Complete Architectural Remodel", "Turnkey Interior Fit-out", "Bespoke Millwork & Joinery", "Smart Home Automation"],
   },
   {
-    id: "sky-penthouse",
-    title: "The Sky Penthouse",
-    location: "Indiranagar, Bengaluru",
-    category: "Penthouse",
+    id: "heritage-bungalow",
+    title: "The Heritage Bungalow",
+    location: "Sadashivnagar, Bengaluru",
+    category: "Bungalow",
     area: "520 m² (5,600 sq ft)",
     year: "2024",
     img: "/images/project_penthouse.jpg",
-    tagline: "Panoramic 360° skyline vistas with minimalist Italian living aesthetics.",
-    desc: "Perched on the 34th floor, this penthouse balances dramatic twilight views with warm, tactile materiality. Custom acoustic walnut paneling conceals home theater audio while sculptural cove lighting accentuates the soaring ceiling volume.",
+    tagline: "Sprawling private bungalow estate with courtyard gardens & bespoke timber craftsmanship.",
+    desc: "Nestled in private landscaped greenery, this expansive bungalow balances indoor-outdoor living with noble materiality. Custom acoustic walnut paneling conceals home theater audio while double-height glass volumes accentuate natural daylight and lush garden panoramas.",
     materials: ["Smoked Oak Flooring", "Nero Marquina Marble", "Hand-brushed Bronze", "Italian Bouclé Upholstery"],
     scope: ["Spatial Re-planning", "3D VR Pre-visualization", "Acoustic Engineering", "Custom Modular Wardrobes"],
   },
@@ -99,18 +99,18 @@ const allProjects: Project[] = [
     id: "sovereign-suite",
     title: "The Sovereign Master Suite",
     location: "Worli Sea Face, Mumbai",
-    category: "Penthouse",
+    category: "Bungalow",
     area: "310 m² (3,350 sq ft)",
     year: "2025",
     img: "/images/service_bedroom.jpg",
     tagline: "Terracotta fluted headboard sanctuary with walk-in smoked glass dressing suite.",
-    desc: "An opulent master retreat overlooking the Arabian Sea. A full-height upholstered velvet wall acts as both acoustic dampener and architectural anchor, accompanied by custom walk-in wardrobe modules with automated sensor lighting.",
+    desc: "An opulent master retreat overlooking private landscaped gardens. A full-height upholstered velvet wall acts as both acoustic dampener and architectural anchor, accompanied by custom walk-in wardrobe modules with automated sensor lighting.",
     materials: ["Rust Terracotta Velvet", "Smoked Glass Wardrobe Profiles", "Herringbone Walnut Flooring", "Antiqued Brass Sconces"],
     scope: ["Master Suite Architecture", "Walk-in Dressing Room Build", "Custom Bed Architecture", "Motorized Blackout Controls"],
   },
 ];
 
-const categories = ["All", "Residential", "Penthouse", "Commercial", "Villa"];
+const categories = ["All", "Residential", "Bungalow", "Commercial", "Villa"];
 
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -131,14 +131,14 @@ export default function ProjectsPage() {
             Curated Spaces of <span style={{ fontStyle: "italic", color: "#e8651c" }}>Distinction</span>
           </>
         }
-        subtitle="Explore our portfolio of bespoke private residences, sky penthouses, and refined commercial architecture across India's premier addresses."
+        subtitle="Explore our portfolio of bespoke private residences, luxury bungalows, and refined commercial architecture across India's premier addresses."
         bgImage="/images/project_villa.jpg"
         primaryCta={{ label: "BOOK A CONSULTATION", href: "/contact" }}
         secondaryCta={{ label: "EXPLORE SERVICES", href: "/services" }}
       />
 
       {/* ═══════════════ MARQUEE ═══════════════ */}
-      <MarqueeTicker text="Bespoke Architecture ✦ Luxury Residences ✦ Executive Suites ✦ Sky Penthouses ✦ Turnkey Quality ✦" />
+      <MarqueeTicker text="Bespoke Architecture ✦ Luxury Residences ✦ Executive Suites ✦ Private Bungalows ✦ Turnkey Quality ✦" />
 
       {/* ═══════════════ FILTER TABS & PROJECTS ═══════════════ */}
       <section style={{ padding: "7rem 8%", background: "#faf9f6" }}>
@@ -169,7 +169,7 @@ export default function ProjectsPage() {
         {/* Projects Grid */}
         <motion.div
           layout
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "3rem" }}
+          className="responsive-cards-grid"
         >
           <AnimatePresence>
             {filteredProjects.map((p, idx) => (
@@ -220,7 +220,7 @@ export default function ProjectsPage() {
 
       {/* ═══════════════ STATS ═══════════════ */}
       <section style={{ padding: "6.5rem 8%", background: "#111", color: "#fff" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "3rem", textAlign: "center" }}>
+        <div className="responsive-compact-grid" style={{ textAlign: "center" }}>
           {[
             { num: 450, suffix: "+", label: "Completed Projects" },
             { num: 15, suffix: "", label: "Metropolitan Hubs" },
@@ -308,7 +308,7 @@ export default function ProjectsPage() {
                   {selectedProject.desc}
                 </p>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "2rem", marginBottom: "2.5rem" }}>
+                <div className="responsive-form-grid" style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "2rem", marginBottom: "2.5rem" }}>
                   <div>
                     <h4 style={{ fontSize: "0.75rem", letterSpacing: "2px", textTransform: "uppercase", color: "#e8651c", marginBottom: "1rem" }}>
                       Curated Material Palette

@@ -1,19 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LetterRoll } from "@/components/SharedUI";
+import { LetterRoll, MenuLetterRoll } from "@/components/SharedUI";
+import ThemeToggle from "@/components/ThemeToggle";
+import { InstagramIcon, FacebookIcon, YoutubeIcon, WhatsAppIcon } from "@/components/SocialIcons";
+
+const ConsultationModal = dynamic(() => import("@/components/ConsultationModal"), { ssr: false });
 
 const navLinks = [
   { label: "Home", href: "/", num: "01", preview: "/images/hero_img_01.png" },
   { label: "About", href: "/about", num: "02", preview: "/images/about_studio.jpg" },
   { label: "Projects", href: "/projects", num: "03", preview: "/images/project_villa.jpg" },
   { label: "Services", href: "/services", num: "04", preview: "/images/service_kitchen.jpg" },
-  { label: "Locations", href: "/locations", num: "05", preview: "/images/locations_studio.jpg" },
-  { label: "Testimonials", href: "/testimonials", num: "06", preview: "/images/project_penthouse.jpg" },
+  { label: "How It Works", href: "/how-it-work", num: "05", preview: "/images/vivid_process_chart.jpg" },
+  { label: "Locations", href: "/locations", num: "06", preview: "/images/locations_studio.jpg" },
   { label: "Reach Us", href: "/contact", num: "07", preview: "/images/locations_studio.jpg" },
   { label: "Design Ideas", href: "/design-ideas", num: "08", preview: "/images/design_ideas.jpg" },
 ];
@@ -55,9 +60,6 @@ export default function Header() {
   const [modalOpen, setModalOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const [selectedDuration, setSelectedDuration] = useState("30 min");
-  const [selectedSlot, setSelectedSlot] = useState("11:30 AM");
-  const [consultSubmitted, setConsultSubmitted] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -70,6 +72,13 @@ export default function Header() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Global listener for "Request a Call" buttons across any page
+  useEffect(() => {
+    const handleOpenConsultation = () => setModalOpen(true);
+    window.addEventListener("open-consultation", handleOpenConsultation);
+    return () => window.removeEventListener("open-consultation", handleOpenConsultation);
   }, []);
 
   // Lock body scroll when menu is open
@@ -97,9 +106,9 @@ export default function Header() {
         className={`header ${scrolled ? "header-scrolled" : ""}`}
         style={{
           transition: "all 0.35s ease",
-          background: scrolled ? "rgba(13, 13, 13, 0.9)" : "transparent",
+          background: scrolled ? "var(--header-scrolled-bg, rgba(13, 13, 13, 0.9))" : "transparent",
           backdropFilter: scrolled ? "blur(12px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
+          borderBottom: scrolled ? "1px solid var(--header-scrolled-border, rgba(255,255,255,0.08))" : "1px solid transparent",
           padding: scrolled ? "1rem 0" : "1.6rem 0",
         }}
       >
@@ -112,8 +121,9 @@ export default function Header() {
             style={{
               padding: "0.6rem 1.3rem",
               borderRadius: "2px",
-              background: "rgba(15,15,15,0.6)",
-              borderColor: "rgba(255,255,255,0.18)",
+              background: "var(--nav-btn-bg, rgba(15,15,15,0.6))",
+              borderColor: "var(--nav-btn-border, rgba(255,255,255,0.18))",
+              color: "var(--header-text, #fff)",
             }}
           >
             <span className="hamburger-label" style={{ fontWeight: 500, letterSpacing: "2.5px" }}>
@@ -123,14 +133,17 @@ export default function Header() {
               <motion.span
                 animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
                 transition={{ duration: 0.35, ease: [0.43, 0.195, 0.02, 1] }}
+                style={{ background: "var(--hamburger-line, #fff)" }}
               />
               <motion.span
                 animate={menuOpen ? { opacity: 0, x: -8 } : { opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
+                style={{ background: "var(--hamburger-line, #fff)" }}
               />
               <motion.span
                 animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
                 transition={{ duration: 0.35, ease: [0.43, 0.195, 0.02, 1] }}
+                style={{ background: "var(--hamburger-line, #fff)" }}
               />
             </div>
           </button>
@@ -147,19 +160,25 @@ export default function Header() {
               width={140}
               height={60}
               priority
+              className="site-logo"
               style={{ objectFit: "contain", display: "block" }}
             />
           </Link>
 
-          {/* REQUEST A CALL WITH FORGE SHIMMER ROTATING BORDER */}
-          <button
-            className="forge-shimmer-btn"
-            onClick={() => { setModalOpen(true); setConsultSubmitted(false); }}
-            style={{ padding: "0.6rem 1.4rem", fontSize: "0.72rem" }}
-          >
-            <LetterRoll text="REQUEST A CALL" />
-            <span style={{ fontSize: "0.85rem", marginLeft: "2px" }}>↗</span>
-          </button>
+          {/* RIGHT ACTIONS: THEME TOGGLE & REQUEST A CALL */}
+          <div style={{ display: "flex", alignItems: "center", gap: "clamp(0.4rem, 2vw, 0.85rem)" }}>
+            <ThemeToggle variant="icon" />
+            <button
+              className="forge-shimmer-btn header-cta-btn"
+              onClick={() => setModalOpen(true)}
+              style={{ padding: "0.6rem 1.4rem", fontSize: "0.72rem" }}
+            >
+              <span className="header-cta-text">
+                <LetterRoll text="REQUEST A CALL" />
+              </span>
+              <span style={{ fontSize: "0.85rem", marginLeft: "2px" }}>↗</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -186,8 +205,27 @@ export default function Header() {
               </div>
               <div className="menu-sidebar-contact">
                 <p style={{ color: "#fff", fontSize: "0.8rem", marginBottom: "0.3rem" }}>Get in touch</p>
-                <p>hello@vividinteriors.in</p>
-                <p>+91 98765 43210</p>
+                <p><a href="mailto:design@vividinteriorspune.com" style={{ color: "inherit" }}>design@vividinteriorspune.com</a></p>
+                <p style={{ marginTop: "0.2rem" }}><a href="tel:+919970180947" style={{ color: "inherit" }}>+91 99701 80947</a></p>
+                <p style={{ marginTop: "0.1rem" }}><a href="tel:+918999923438" style={{ color: "inherit" }}>+91 89999 23438</a></p>
+                <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.45)", marginTop: "0.4rem" }}>Erandwane, Pune</p>
+                <div style={{ display: "flex", gap: "0.6rem", marginTop: "1rem" }}>
+                  <a href="https://www.instagram.com/vivid_interiors_developers/" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", padding: "4px" }} title="Instagram">
+                    <InstagramIcon size={16} />
+                  </a>
+                  <a href="https://www.facebook.com/vividinteriorspune/" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", padding: "4px" }} title="Facebook">
+                    <FacebookIcon size={16} />
+                  </a>
+                  <a href="https://www.youtube.com/channel/UCeGNUunmmJuyLsbioeN31-g" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", padding: "4px" }} title="YouTube">
+                    <YoutubeIcon size={16} />
+                  </a>
+                  <a href="https://wa.me/919970180947" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", padding: "4px" }} title="WhatsApp">
+                    <WhatsAppIcon size={16} />
+                  </a>
+                </div>
+                <div style={{ marginTop: "1.2rem" }}>
+                  <ThemeToggle variant="sidebar" />
+                </div>
               </div>
             </motion.div>
 
@@ -211,10 +249,10 @@ export default function Header() {
                   >
                     <Link
                       href={link.href}
-                      className="menu-link"
+                      className={`menu-link ${isActive ? "active" : ""}`}
                       onClick={() => setMenuOpen(false)}
                       style={{
-                        opacity: hoveredIndex !== null && hoveredIndex !== i ? 0.25 : 1,
+                        opacity: hoveredIndex !== null && hoveredIndex !== i ? 0.3 : 1,
                         color: isActive ? "#e8651c" : "#fff",
                       }}
                     >
@@ -222,10 +260,10 @@ export default function Header() {
                         {link.num}
                       </span>
                       <span className="menu-link-text">
-                        <LetterRoll text={link.label} />
+                        <MenuLetterRoll text={link.label} />
                       </span>
                       {isActive && (
-                        <span style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "2px", color: "#e8651c", marginLeft: "1rem" }}>
+                        <span style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "2px", color: "#e8651c", marginLeft: "0.8rem", padding: "0.2rem 0.6rem", background: "rgba(232,101,28,0.12)", borderRadius: "999px" }}>
                           ✦ CURRENT
                         </span>
                       )}
@@ -279,109 +317,7 @@ export default function Header() {
       </AnimatePresence>
 
       {/* REQUEST A CALL MODAL */}
-      <AnimatePresence>
-        {modalOpen && (
-          <motion.div
-            className="modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setModalOpen(false)}
-          >
-            <motion.div
-              className="modal-content"
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button className="close-modal" onClick={() => setModalOpen(false)}>✕</button>
-              
-              {consultSubmitted ? (
-                <div style={{ padding: "4rem 3rem", textAlign: "center", background: "#0d0d0d", color: "#fff" }}>
-                  <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "#e8651c", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem", fontSize: "2rem" }}>
-                    ✓
-                  </div>
-                  <h3 className="serif" style={{ fontSize: "2rem", marginBottom: "1rem" }}>Consultation Requested</h3>
-                  <p style={{ color: "#aaa", fontSize: "0.95rem", maxWidth: "420px", margin: "0 auto 2rem", lineHeight: 1.7 }}>
-                    Thank you! Our principal design team will call you on <strong>October 7, 2026</strong> at <strong>{selectedSlot}</strong> for a <strong>{selectedDuration}</strong> deep-dive session.
-                  </p>
-                  <button className="btn-orange" onClick={() => setModalOpen(false)}>
-                    DONE
-                  </button>
-                </div>
-              ) : (
-                <div className="modal-inner">
-                  <div className="modal-left" style={{ background: "#111", color: "#fff" }}>
-                    <div className="avatar" style={{ background: "#e8651c", color: "#fff" }}>V</div>
-                    <h3 className="serif" style={{ fontSize: "1.4rem", marginBottom: "0.5rem" }}>Book a Consultation</h3>
-                    <p style={{ fontSize: "0.75rem", letterSpacing: "1.5px", textTransform: "uppercase", color: "#aaa", marginBottom: "1.5rem" }}>
-                      Direct with Senior Architect
-                    </p>
-                    <div style={{ fontSize: "0.8rem", color: "#e8651c", marginBottom: "1rem" }}>October 2026</div>
-                    <div className="calendar-grid">
-                      <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-                      <span></span><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                      <span>6</span><span className="active-day" style={{ background: "#e8651c", color: "#fff" }}>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
-                      <span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span>
-                    </div>
-                  </div>
-                  <div className="modal-right" style={{ background: "#faf9f6" }}>
-                    <h4 style={{ fontSize: "0.85rem", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "0.75rem", color: "#222" }}>
-                      How long do you need?
-                    </h4>
-                    <div className="duration-btns">
-                      {["15 min", "30 min", "1 hour"].map((dur) => (
-                        <button
-                          key={dur}
-                          className={selectedDuration === dur ? "active" : ""}
-                          style={{
-                            borderColor: selectedDuration === dur ? "#e8651c" : "#ddd",
-                            background: selectedDuration === dur ? "#e8651c" : "#fff",
-                            color: selectedDuration === dur ? "#fff" : "#333",
-                          }}
-                          onClick={() => setSelectedDuration(dur)}
-                        >
-                          {dur}
-                        </button>
-                      ))}
-                    </div>
-
-                    <h4 style={{ fontSize: "0.85rem", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "0.5rem", color: "#222" }}>
-                      Select a Time Slot
-                    </h4>
-                    <p style={{ fontSize: "0.75rem", color: "#777", marginBottom: "1rem" }}>Wednesday, 7 October 2026 (IST)</p>
-                    <div className="time-slots" style={{ maxHeight: "180px", overflowY: "auto", paddingRight: "4px" }}>
-                      {["10:00 AM", "11:30 AM", "02:00 PM", "04:30 PM", "06:00 PM"].map((slot) => (
-                        <button
-                          key={slot}
-                          onClick={() => setSelectedSlot(slot)}
-                          style={{
-                            borderColor: selectedSlot === slot ? "#e8651c" : "#ddd",
-                            background: selectedSlot === slot ? "rgba(232, 101, 28, 0.1)" : "#fff",
-                            color: selectedSlot === slot ? "#e8651c" : "#333",
-                            fontWeight: selectedSlot === slot ? "bold" : "normal",
-                          }}
-                        >
-                          {slot}
-                        </button>
-                      ))}
-                    </div>
-
-                    <button
-                      className="btn-orange"
-                      style={{ width: "100%", marginTop: "1.5rem", justifyContent: "center" }}
-                      onClick={() => setConsultSubmitted(true)}
-                    >
-                      CONFIRM APPOINTMENT &nbsp;→
-                    </button>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConsultationModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );
 }
